@@ -602,8 +602,8 @@ def create_room_section():
 
 def join_room_section():
     with st.container():
-        st.markdown('<div class="creation-card">', unsafe_for_html=True)
-        st.markdown('<div class="card-title">🔗 JOIN CHANNEL</div>', unsafe_for_html=True)
+        st.markdown('<div class="creation-card">', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">🔗 JOIN CHANNEL</div>', unsafe_allow_html=True)
         
         join_id = st.text_input(
             "Channel ID",
@@ -625,7 +625,7 @@ def join_room_section():
                     else:
                         st.error("❌ Channel not found")
         
-        st.markdown('</div>', unsafe_for_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # ====================
 # ULTRA-FAST CHAT INTERFACE WITH PROFESSIONAL STYLING
@@ -664,7 +664,7 @@ def chat_interface():
                 <span class="room-id">{st.session_state.current_room}</span>
             </div>
         </div>
-        """, unsafe_for_html=True)
+        """, unsafe_allow_html=True)
     
     with col2:
         if st.button("🚪 LEAVE", type="secondary", use_container_width=True):
@@ -677,11 +677,11 @@ def chat_interface():
         <div class="status-dot"></div>
         🔒 ENCRYPTED • LIVE • ANONYMOUS • 0.5s UPDATES
     </div>
-    """, unsafe_for_html=True)
+    """, unsafe_allow_html=True)
     
     # Display messages with professional styling and ultra-fast updates
     with chat_placeholder.container():
-        st.markdown('<div class="chat-container">', unsafe_for_html=True)
+        st.markdown('<div class="chat-container">', unsafe_allow_html=True)
         
         messages = room_data.get("messages", [])
         encryptor = EncryptionHandler()
@@ -698,7 +698,7 @@ def chat_interface():
                     🔓 No messages yet. Start the encrypted conversation...
                 </div>
             </div>
-            """, unsafe_for_html=True)
+            """, unsafe_allow_html=True)
         
         # Display messages with professional animations (last 50 messages)
         for i, msg in enumerate(messages[-50:]):
@@ -730,7 +730,7 @@ def chat_interface():
                         {chain_status} • Hash: {msg.get('hash', 'N/A')[:8]}...
                     </div>
                 </div>
-                """, unsafe_for_html=True)
+                """, unsafe_allow_html=True)
                 
             except Exception as e:
                 st.markdown(f"""
@@ -739,9 +739,9 @@ def chat_interface():
                         [🔒 Encrypted message]
                     </div>
                 </div>
-                """, unsafe_for_html=True)
+                """, unsafe_allow_html=True)
         
-        st.markdown('</div>', unsafe_for_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
     
     # Professional message input with improved sizing
     col1, col2 = st.columns([5, 1])
@@ -830,12 +830,12 @@ def main():
             with col2:
                 join_room_section()
             
-            st.markdown("<br><br>", unsafe_for_html=True)
+            st.markdown("<br><br>", unsafe_allow_html=True)
             st.markdown("""
             <div style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem; font-style: italic;">
                 🔒 Channels are private and not displayed for maximum anonymity
             </div>
-            """, unsafe_for_html=True)
+            """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
