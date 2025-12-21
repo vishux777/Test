@@ -12,8 +12,6 @@ import re
 import secrets
 import pickle
 from pathlib import Path
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
 
 # ====================
 # PRODUCTION-READY GLOBAL STATE
@@ -627,8 +625,8 @@ def initialize_session():
         st.session_state.room_name = ""
     if 'auto_updater' not in st.session_state:
         st.session_state.auto_updater = AutoUpdater()
-    if 'message_draft' not in st.session_state:
-        st.session_state.message_draft = ""
+    if 'message_key' not in st.session_state:
+        st.session_state.message_key = 0  # Use this instead of direct widget state
     if 'initialized' not in st.session_state:
         st.session_state.initialized = True
 
@@ -872,26 +870,23 @@ def chat_interface():
         
         st.markdown('</div>', unsafe_allow_html=True)
     
+    # FIXED: Use a key-based approach instead of modifying widget state
+    message_key = f"message_input_{st.session_state.get('message_key', 0)}"
+    
     # Enhanced message input with typing indicator
     col1, col2 = st.columns([4, 1])
     with col1:
         message = st.text_input(
             "🔒 Type your encrypted message...",
-            key="message_input",
+            key=message_key,
             label_visibility="collapsed",
             placeholder="Your message is encrypted end-to-end..."
         )
     with col2:
         send_clicked = st.button("📤 SEND", type="primary", use_container_width=True)
     
-    # Auto-send on Enter and handle typing indicator
-    if message:
-        # Show typing indicator for other users (simulated)
-        if len(message) > 0:
-            with st.spinner("📝 Encrypting message..."):
-                time.sleep(0.1)  # Simulate encryption delay
-    
-    if send_clicked and message.strip():
+    # Handle message sending
+    if send_clicked and message and message.strip():
         # Get previous hash with error handling
         previous_hash = "0" * 64
         if messages:
@@ -924,8 +919,8 @@ def chat_interface():
         # Add to global state
         if global_state.add_message(st.session_state.current_room, msg_data):
             st.toast("✅ Message sent securely!", icon="🔒")
-            # Force refresh by clearing the input
-            st.session_state.message_input = ""
+            # Increment the key to force a new widget instance (clears the input)
+            st.session_state.message_key = st.session_state.get('message_key', 0) + 1
             st.rerun()
         else:
             st.error("❌ Failed to send message")
