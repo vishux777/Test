@@ -14,7 +14,7 @@ import pickle
 from pathlib import Path
 
 # ====================
-# PRODUCTION-READY GLOBAL STATE
+# PRODUCTION-READY GLOBAL STATE WITH ACTIVE USER TRACKING
 # ====================
 class PersistentGlobalState:
     """Thread-safe persistent global state that survives Streamlit reruns"""
@@ -36,21 +36,25 @@ class PersistentGlobalState:
                     state_data = pickle.load(f)
                     self.ROOMS = state_data.get('rooms', {})
                     self.ENCRYPTION_KEY = state_data.get('encryption_key', Fernet.generate_key())
+                    self.ACTIVE_USERS = state_data.get('active_users', {})  # Track active users
             else:
                 self.ROOMS = {}
                 self.ENCRYPTION_KEY = Fernet.generate_key()
+                self.ACTIVE_USERS = {}  # room_id -> {user_id: last_seen_timestamp}
                 self._save_state()
         except Exception as e:
             print(f"Error loading state: {e}")
             self.ROOMS = {}
             self.ENCRYPTION_KEY = Fernet.generate_key()
+            self.ACTIVE_USERS = {}
     
     def _save_state(self):
         """Save state to disk"""
         try:
             state_data = {
                 'rooms': self.ROOMS,
-                'encryption_key': self.ENCRYPTION_KEY
+                'encryption_key': self.ENCRYPTION_KEY,
+                'active_users': self.ACTIVE_USERS
             }
             with open(self._state_file, 'wb') as f:
                 pickle.dump(state_data, f)
@@ -85,9 +89,59 @@ class PersistentGlobalState:
                     "room_id": room_id,
                     "message_count": 0
                 }
+                self.ACTIVE_USERS[room_id] = {}  # Initialize active users tracking
                 self._save_state()
                 return True
             return False
+    
+    def update_user_activity(self, room_id: str, user_id: str):
+        """Update user activity timestamp"""
+        with self._lock:
+            if room_id not in self.ACTIVE_USERS:
+                self.ACTIVE_USERS[room_id] = {}
+            self.ACTIVE_USERS[room_id][user_id] = time.time()
+            self._save_state()
+    
+    def get_active_users(self, room_id: str) -> Dict[str, float]:
+        """Get active users for a room (users active in last 30 seconds)"""
+        with self._lock:
+            if room_id not in self.ACTIVE_USERS:
+                return {}
+            
+            current_time = time.time()
+            active_users = {}
+            
+            for user_id, last_seen in self.ACTIVE_USERS[room_id].items():
+                if current_time - last_seen < 30:  # Active within last 30 seconds
+                    active_users[user_id] = last_seen
+            
+            return active_users
+    
+    def cleanup_inactive_users(self, room_id: str):
+        """Remove inactive users and return count of removed users"""
+        with self._lock:
+            if room_id not in self.ACTIVE_USERS:
+                return 0
+            
+            current_time = time.time()
+            original_count = len(self.ACTIVE_USERS[room_id])
+            
+            # Keep only users active in last 30 seconds
+            self.ACTIVE_USERS[room_id] = {
+                user_id: last_seen 
+                for user_id, last_seen in self.ACTIVE_USERS[room_id].items()
+                if current_time - last_seen < 30
+            }
+            
+            removed_count = original_count - len(self.ACTIVE_USERS[room_id])
+            self._save_state()
+            return removed_count
+    
+    def should_cleanup_messages(self, room_id: str) -> bool:
+        """Check if messages should be cleaned up (no active users)"""
+        with self._lock:
+            active_users = self.get_active_users(room_id)
+            return len(active_users) == 0  # No active users
     
     def get_room_stats(self, room_id: str) -> Optional[Dict]:
         """Safely get room statistics"""
@@ -636,16 +690,16 @@ def render_smooth_header():
     """, unsafe_allow_html=True)
 
 # ====================
-# IMPROVED AUTO-UPDATE MECHANISM
+# ULTRA-FAST AUTO-UPDATE MECHANISM (0.5 SECONDS)
 # ====================
-class ImprovedAutoUpdater:
+class UltraFastAutoUpdater:
     def __init__(self):
         self.last_message_count = 0
         self.last_check_time = 0
-        self.update_interval = 1.5  # Reduced to 1.5 seconds for faster updates
+        self.update_interval = 0.5  # 0.5 seconds for ultra-fast updates
     
     def check_for_updates(self, room_id: str) -> bool:
-        """Check if there are new messages with improved logic"""
+        """Check if there are new messages with ultra-fast polling"""
         global_state = get_global_state()
         room_data = global_state.get_room(room_id)
         if not room_data:
@@ -676,16 +730,72 @@ def initialize_session():
     if 'room_name' not in st.session_state:
         st.session_state.room_name = ""
     if 'auto_updater' not in st.session_state:
-        st.session_state.auto_updater = ImprovedAutoUpdater()
+        st.session_state.auto_updater = UltraFastAutoUpdater()
     if 'message_key' not in st.session_state:
         st.session_state.message_key = 0
     if 'initialized' not in st.session_state:
         st.session_state.initialized = True
+    if 'last_activity_update' not in st.session_state:
+        st.session_state.last_activity_update = 0
 
 def generate_room_id(name: str) -> str:
     clean_name = re.sub(r'[^a-zA-Z0-9]', '', name)[:4].upper()
     unique_part = uuid.uuid4().hex[:4].upper()
     return f"{clean_name}-{unique_part}"
+
+# ====================
+# ACTIVE USERS SIDEBAR
+# ====================
+def display_active_users_sidebar(room_id: str):
+    """Display active users in the current room"""
+    if not room_id:
+        return
+    
+    global_state = get_global_state()
+    
+    with st.sidebar:
+        st.markdown("### 👥 Active Users")
+        
+        # Update current user activity
+        global_state.update_user_activity(room_id, st.session_state.user_id)
+        
+        # Cleanup inactive users
+        removed_count = global_state.cleanup_inactive_users(room_id)
+        
+        # Get active users
+        active_users = global_state.get_active_users(room_id)
+        
+        if active_users:
+            st.markdown(f"**{len(active_users)}** users online")
+            
+            for user_id, last_seen in active_users.items():
+                is_current_user = user_id == st.session_state.user_id
+                user_display = "👤 You" if is_current_user else f"👤 User_{user_id[-6:]}"
+                status_color = "#10b981" if is_current_user else "#8a63d2"
+                
+                st.markdown(f"""
+                <div style="
+                    padding: 0.5rem 1rem; 
+                    margin: 0.25rem 0; 
+                    background: rgba({status_color}, 0.1); 
+                    border-radius: 8px; 
+                    border-left: 3px solid {status_color};
+                    font-size: 0.9rem;
+                ">
+                    {user_display}
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.markdown("*No active users*")
+        
+        # Check if should cleanup messages (no active users)
+        if global_state.should_cleanup_messages(room_id):
+            st.warning("⚠️ No active users - messages will be cleaned up")
+            
+            if st.button("🗑️ Clear All Messages"):
+                if global_state.clear_room_messages(room_id):
+                    st.success("✅ Messages cleared")
+                    st.rerun()
 
 # ====================
 # UI COMPONENTS FOR ANONYMOUS PLATFORM
@@ -751,7 +861,7 @@ def join_room_section():
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ====================
-# IMPROVED CHAT INTERFACE WITH BETTER AUTO-UPDATE
+# ULTRA-FAST CHAT INTERFACE WITH 0.5 SECOND UPDATES
 # ====================
 def chat_interface():
     if not st.session_state.current_room:
@@ -765,12 +875,20 @@ def chat_interface():
         st.rerun()
         return
     
-    # Create placeholder for auto-updating content
+    # Show active users sidebar
+    display_active_users_sidebar(st.session_state.current_room)
+    
+    # Create placeholder for ultra-fast auto-updating content
     chat_placeholder = st.empty()
     
-    # Improved auto-update mechanism
-    if st.session_state.auto_updater.check_for_updates(st.session_state.current_room):
-        st.rerun()
+    # Ultra-fast auto-update mechanism (0.5 seconds)
+    current_time = time.time()
+    if current_time - st.session_state.last_activity_update >= 0.5:
+        st.session_state.last_activity_update = current_time
+        
+        # Check for new messages
+        if st.session_state.auto_updater.check_for_updates(st.session_state.current_room):
+            st.rerun()
     
     # Chat header with enhanced UI
     col1, col2 = st.columns([3, 1])
@@ -797,12 +915,17 @@ def chat_interface():
     </div>
     """, unsafe_allow_html=True)
     
-    # Display messages with improved animations
+    # Display messages with ultra-fast updates
     with chat_placeholder.container():
         st.markdown('<div class="chat-container">', unsafe_allow_html=True)
         
         messages = room_data.get("messages", [])
         encryptor = EncryptionHandler()
+        
+        # Check if should cleanup messages (no active users)
+        if global_state.should_cleanup_messages(st.session_state.current_room):
+            if len(messages) > 0:
+                st.warning("⚠️ No active users detected - messages will be cleared when all users leave")
         
         if not messages:
             st.markdown("""
@@ -813,8 +936,8 @@ def chat_interface():
             </div>
             """, unsafe_allow_html=True)
         
-        # Display messages with smooth animations
-        for i, msg in enumerate(messages[-30:]):  # Show last 30 messages
+        # Display messages with smooth animations (last 50 messages)
+        for i, msg in enumerate(messages[-50:]):
             try:
                 decrypted = encryptor.decrypt(msg["encrypted_message"])
                 msg_time = datetime.fromtimestamp(msg["timestamp"]).strftime("%H:%M:%S")
@@ -910,85 +1033,49 @@ def chat_interface():
             st.error("❌ Failed to send")
 
 # ====================
-# MAIN APP WITH IMPROVEMENTS
+# MAIN APP WITH ULTRA-FAST UPDATES
 # ====================
 def main():
     st.set_page_config(
         page_title="DarkRelay • DE STUDIO",
         page_icon="🔒",
         layout="wide",
-        initial_sidebar_state="collapsed"
+        initial_sidebar_state="expanded"  # Show sidebar for active users
     )
     
     inject_smooth_animations()
     render_smooth_header()
     initialize_session()
     
-    # Create enhanced sidebar (without active channels for anonymity)
-    with st.sidebar:
-        st.markdown("### ⚙️ Settings")
-        
+    # Main content area
+    main_col, sidebar_col = st.columns([4, 1])
+    
+    with main_col:
         if st.session_state.current_room:
-            st.markdown(f"**Channel:** {st.session_state.room_name}")
+            chat_interface()
+        else:
+            col1, col2 = st.columns([1, 1], gap="large")
             
-            if st.button("🗑️ Clear History", use_container_width=True):
-                if st.checkbox("⚠️ Confirm?"):
-                    global_state = get_global_state()
-                    if global_state.clear_room_messages(st.session_state.current_room):
-                        st.success("✅ Cleared!")
-                        time.sleep(0.5)
-                        st.rerun()
-        
-        st.markdown("---")
-        st.markdown("### 📊 Stats")
-        
-        try:
-            global_state = get_global_state()
-            total_rooms = len(global_state.ROOMS)
-            total_messages = sum(len(room.get("messages", [])) for room in global_state.ROOMS.values())
-            
-            col1, col2 = st.columns(2)
             with col1:
-                st.metric("Channels", total_rooms)
+                create_room_section()
+            
             with col2:
-                st.metric("Messages", total_messages)
-        except Exception:
-            st.error("Stats unavailable")
-        
-        st.markdown("---")
-        st.markdown("### 🎨 Theme")
-        
-        theme = st.selectbox("Appearance", ["Cinematic Dark", "Pure Black", "Matrix Green", "Neon Purple"])
-        
-        if theme == "Matrix Green":
+                join_room_section()
+            
+            st.markdown("<br><br>", unsafe_allow_html=True)
             st.markdown("""
-            <style>
-            .stApp { background: #000000 !important; background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%); }
-            .main-title { background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%) !important; }
-            .status-indicator { color: #00ff00; border-color: #00ff00; }
-            .status-dot { background: #00ff00; }
-            </style>
+            <div style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem; font-style: italic;">
+                🔒 Channels are private and not displayed for maximum anonymity
+            </div>
             """, unsafe_allow_html=True)
     
-    # Main content
-    if st.session_state.current_room:
-        chat_interface()
-    else:
-        col1, col2 = st.columns([1, 1], gap="large")
-        
-        with col1:
-            create_room_section()
-        
-        with col2:
-            join_room_section()
-        
-        # Removed active channels display for anonymity
-        st.markdown("<br><br>", unsafe_allow_html=True)
-        st.markdown("""
-        <div style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem; font-style: italic;">
-            🔒 Channels are private and not displayed for maximum anonymity
-        </div>
-        """, unsafe_allow_html=True)
+    with sidebar_col:
+        # Always show active users sidebar when in a room
+        if st.session_state.current_room:
+            display_active_users_sidebar(st.session_state.current_room)
+        else:
+            st.markdown("### 🔒 DarkRelay")
+            st.markdown("*Join a channel to see active users*")
 
 if __name__ == "__main__":
     main()
