@@ -145,140 +145,158 @@ class EncryptionHandler:
         return hashlib.sha256(data.encode()).hexdigest()
 
 # ====================
-# ORIGINAL BLACK THEME WITH HIGH-END ANIMATIONS
+# ENHANCED ANIMATIONS WITH SOLID MOTIONS
 # ====================
-def inject_cinematic_css():
+def inject_smooth_animations():
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
     
-    /* Pure black theme with cinematic elements */
+    /* Pure black theme with smooth animations */
     .stApp {
         background: #000000 !important;
         background-image: 
-            radial-gradient(circle at 15% 25%, rgba(20, 20, 40, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 85% 75%, rgba(40, 10, 80, 0.2) 0%, transparent 50%),
-            linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(10,10,20,0.8) 100%);
-        animation: backgroundShift 20s ease-in-out infinite;
+            radial-gradient(circle at 20% 30%, rgba(138, 99, 210, 0.15) 0%, transparent 60%),
+            radial-gradient(circle at 80% 70%, rgba(40, 10, 80, 0.1) 0%, transparent 60%);
+        animation: backgroundPulse 15s ease-in-out infinite;
     }
     
-    @keyframes backgroundShift {
-        0%, 100% { background-position: 0% 0%, 100% 100%; }
-        50% { background-position: 100% 100%, 0% 0%; }
+    @keyframes backgroundPulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.95; }
     }
     
     .main {
         background: transparent !important;
     }
     
-    /* Cinematic Hero Section */
+    /* Smooth cinematic hero section */
     .hero-container {
         text-align: left;
-        padding: 4rem 0 5rem 0;
+        padding: 5rem 0 6rem 0;
         position: relative;
         overflow: hidden;
-        border-bottom: 1px solid rgba(138, 99, 210, 0.2);
+        border-bottom: 1px solid rgba(138, 99, 210, 0.15);
     }
     
-    .hero-container::before {
-        content: '';
+    /* Floating particles animation */
+    .particles {
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: 
-            linear-gradient(45deg, transparent 49%, rgba(138, 99, 210, 0.1) 50%, transparent 51%),
-            linear-gradient(-45deg, transparent 49%, rgba(138, 99, 210, 0.1) 50%, transparent 51%);
-        background-size: 60px 60px;
-        animation: scanlines 8s linear infinite;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
         pointer-events: none;
     }
     
-    @keyframes scanlines {
-        0% { transform: translateY(-100%); }
-        100% { transform: translateY(100%); }
+    .particle {
+        position: absolute;
+        border-radius: 50%;
+        animation: float 20s infinite linear;
     }
     
-    .studio-name {
+    @keyframes float {
+        0% {
+            transform: translateY(100vh) translateX(0) scale(0);
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100vh) translateX(100px) scale(1.5);
+            opacity: 0;
+        }
+    }
+    
+    .de-studio {
         font-family: 'Space Grotesk', sans-serif;
-        font-weight: 500;
-        font-size: 0.9rem;
+        font-weight: 600;
+        font-size: 1rem;
         color: #8a63d2;
-        letter-spacing: 0.4em;
+        letter-spacing: 0.5em;
         text-transform: uppercase;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         opacity: 0;
-        animation: fadeInUp 1s ease-out 0.5s forwards;
+        animation: smoothFadeInUp 1.2s ease-out 0.3s forwards;
+        text-shadow: 0 0 20px rgba(138, 99, 210, 0.5);
     }
     
     .main-title {
         font-family: 'Inter', sans-serif;
-        font-weight: 800;
-        font-size: 4.5rem;
-        background: linear-gradient(135deg, #ffffff 0%, #a78bfa 30%, #8a63d2 60%, #6d28d9 100%);
+        font-weight: 900;
+        font-size: 5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #a78bfa 40%, #8a63d2 70%, #6d28d9 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         margin: 0;
         line-height: 1.1;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.04em;
         opacity: 0;
-        animation: fadeInUp 1s ease-out 0.7s forwards, titleGlow 3s ease-in-out infinite;
+        animation: smoothFadeInUp 1.2s ease-out 0.6s forwards, titleGlow 4s ease-in-out infinite;
+        position: relative;
     }
     
-    @keyframes titleGlow {
-        0%, 100% { filter: brightness(1); }
-        50% { filter: brightness(1.2); }
-    }
-    
-    @keyframes fadeInUp {
+    @keyframes smoothFadeInUp {
         from {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px) scale(0.9);
         }
         to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    @keyframes titleGlow {
+        0%, 100% { 
+            filter: brightness(1) drop-shadow(0 0 30px rgba(138, 99, 210, 0.3));
+        }
+        50% { 
+            filter: brightness(1.2) drop-shadow(0 0 50px rgba(138, 99, 210, 0.6));
         }
     }
     
     .title-accent {
         font-weight: 300;
-        font-size: 1.8rem;
+        font-size: 2rem;
         opacity: 0;
-        animation: fadeInUp 1s ease-out 0.9s forwards;
+        animation: smoothFadeInUp 1.2s ease-out 0.9s forwards;
         display: block;
-        margin-top: 0.5rem;
+        margin-top: 1rem;
+        letter-spacing: 0.05em;
     }
     
     .tagline {
         font-family: 'Inter', sans-serif;
         font-weight: 300;
-        font-size: 1.2rem;
-        color: rgba(255, 255, 255, 0.7);
-        margin-top: 2rem;
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-top: 2.5rem;
         max-width: 600px;
-        line-height: 1.7;
+        line-height: 1.8;
         opacity: 0;
-        animation: fadeInUp 1s ease-out 1.1s forwards;
+        animation: smoothFadeInUp 1.2s ease-out 1.2s forwards;
     }
     
-    /* Cinematic cards with hover effects */
+    /* Smooth glass cards */
     .creation-card {
-        background: rgba(15, 15, 20, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 20px;
-        padding: 3rem;
-        margin: 2rem 0;
+        background: rgba(15, 15, 20, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 3.5rem;
+        margin: 3rem 0;
         position: relative;
         overflow: hidden;
-        backdrop-filter: blur(10px);
-        transform: translateY(50px);
+        backdrop-filter: blur(15px);
+        transform: translateY(60px) scale(0.95);
         opacity: 0;
-        animation: slideInUp 1s ease-out 1.3s forwards;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        transition: all 0.3s ease;
+        animation: smoothSlideInUp 1s ease-out 1.5s forwards;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .creation-card::before {
@@ -288,8 +306,8 @@ def inject_cinematic_css():
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(138, 99, 210, 0.1), transparent);
-        transition: left 0.8s;
+        background: linear-gradient(90deg, transparent, rgba(138, 99, 210, 0.15), transparent);
+        transition: left 1s ease;
     }
     
     .creation-card:hover::before {
@@ -297,93 +315,101 @@ def inject_cinematic_css():
     }
     
     .creation-card:hover {
-        transform: translateY(45px) scale(1.02);
-        box-shadow: 0 20px 60px rgba(138, 99, 210, 0.3);
-        border-color: rgba(138, 99, 210, 0.3);
+        transform: translateY(55px) scale(0.97);
+        box-shadow: 0 25px 70px rgba(138, 99, 210, 0.4);
+        border-color: rgba(138, 99, 210, 0.4);
     }
     
-    @keyframes slideInUp {
+    @keyframes smoothSlideInUp {
         to {
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
             opacity: 1;
         }
     }
     
     .card-title {
         font-family: 'Space Grotesk', sans-serif;
-        font-weight: 500;
-        font-size: 1.2rem;
+        font-weight: 600;
+        font-size: 1.3rem;
         color: #8a63d2;
-        margin-bottom: 2rem;
-        letter-spacing: 0.15em;
+        margin-bottom: 2.5rem;
+        letter-spacing: 0.2em;
         text-transform: uppercase;
         position: relative;
+        opacity: 0;
+        animation: smoothFadeIn 0.8s ease-out 1.8s forwards;
     }
     
     .card-title::after {
         content: '';
         position: absolute;
-        bottom: -0.5rem;
+        bottom: -0.8rem;
         left: 0;
-        width: 50px;
-        height: 2px;
+        width: 60px;
+        height: 3px;
         background: linear-gradient(90deg, #8a63d2, transparent);
-        animation: titleUnderline 2s ease-out;
+        animation: smoothTitleUnderline 2.5s ease-out;
     }
     
-    @keyframes titleUnderline {
+    @keyframes smoothTitleUnderline {
         from { width: 0; }
-        to { width: 50px; }
+        to { width: 60px; }
     }
     
-    /* Animated input fields */
+    @keyframes smoothFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    /* Smooth animated inputs */
     .stTextInput > div > div > input {
-        background: rgba(255, 255, 255, 0.03) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+        border: 2px solid rgba(255, 255, 255, 0.1) !important;
         color: #ffffff !important;
-        border-radius: 12px !important;
+        border-radius: 16px !important;
         font-family: 'Inter', sans-serif !important;
-        font-size: 1rem !important;
-        padding: 1rem 1.5rem !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        font-size: 1.1rem !important;
+        padding: 1.2rem 1.8rem !important;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
         position: relative;
         overflow: hidden;
+        backdrop-filter: blur(10px);
     }
     
     .stTextInput > div > div > input:focus {
         border-color: #8a63d2 !important;
-        background: rgba(138, 99, 210, 0.05) !important;
+        background: rgba(138, 99, 210, 0.08) !important;
         box-shadow: 
-            0 0 0 3px rgba(138, 99, 210, 0.2),
-            0 0 20px rgba(138, 99, 210, 0.3) !important;
-        transform: scale(1.02);
-        animation: inputPulse 0.6s ease-out;
+            0 0 0 4px rgba(138, 99, 210, 0.2),
+            0 0 25px rgba(138, 99, 210, 0.4) !important;
+        transform: scale(1.03);
+        animation: smoothInputPulse 0.8s ease-out;
     }
     
-    @keyframes inputPulse {
-        0% { box-shadow: 0 0 0 0 rgba(138, 99, 210, 0.4); }
-        100% { box-shadow: 0 0 0 20px rgba(138, 99, 210, 0); }
+    @keyframes smoothInputPulse {
+        0% { box-shadow: 0 0 0 0 rgba(138, 99, 210, 0.6); }
+        100% { box-shadow: 0 0 0 30px rgba(138, 99, 210, 0); }
     }
     
-    /* Animated buttons with ripple effect */
+    /* Smooth animated buttons with enhanced effects */
     .stButton > button {
         background: linear-gradient(135deg, #8a63d2 0%, #6d28d9 100%) !important;
         color: white !important;
         border: none !important;
-        border-radius: 12px !important;
-        padding: 1rem 2rem !important;
+        border-radius: 16px !important;
+        padding: 1.2rem 2.5rem !important;
         font-family: 'Space Grotesk', sans-serif !important;
-        font-weight: 500 !important;
-        font-size: 0.9rem !important;
-        letter-spacing: 0.05em !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        font-weight: 600 !important;
+        font-size: 1rem !important;
+        letter-spacing: 0.1em !important;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
         width: 100%;
         text-transform: uppercase;
         cursor: pointer !important;
         position: relative;
         overflow: hidden;
         transform: translateY(0);
-        box-shadow: 0 4px 15px rgba(138, 99, 210, 0.3);
+        box-shadow: 0 6px 20px rgba(138, 99, 210, 0.4);
     }
     
     .stButton > button::before {
@@ -394,48 +420,43 @@ def inject_cinematic_css():
         width: 0;
         height: 0;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.4);
         transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
+        transition: width 0.8s, height 0.8s;
     }
     
     .stButton > button:active::before {
-        width: 300px;
-        height: 300px;
+        width: 400px;
+        height: 400px;
     }
     
     .stButton > button:hover {
-        transform: translateY(-3px) !important;
-        box-shadow: 0 12px 35px rgba(138, 99, 210, 0.5) !important;
-        animation: buttonHover 0.3s ease-out;
+        transform: translateY(-4px) !important;
+        box-shadow: 0 15px 40px rgba(138, 99, 210, 0.6) !important;
+        background: linear-gradient(135deg, #946be6 0%, #7c3aed 100%) !important;
     }
     
-    @keyframes buttonHover {
-        0% { transform: translateY(0); }
-        50% { transform: translateY(-5px); }
-        100% { transform: translateY(-3px); }
-    }
-    
-    /* Cinematic chat container */
+    /* Smooth chat container with enhanced styling */
     .chat-container {
-        background: rgba(15, 15, 20, 0.95);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 24px;
-        padding: 2.5rem;
-        margin-top: 2rem;
-        max-height: 600px;
+        background: rgba(15, 15, 20, 0.98);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 28px;
+        padding: 3rem;
+        margin-top: 3rem;
+        max-height: 650px;
         overflow-y: auto;
         box-shadow: 
-            inset 0 1px 0 rgba(255, 255, 255, 0.05),
-            0 20px 40px rgba(0, 0, 0, 0.5);
+            inset 0 2px 0 rgba(255, 255, 255, 0.05),
+            0 25px 60px rgba(0, 0, 0, 0.7);
         position: relative;
-        animation: chatContainerFadeIn 1s ease-out;
+        animation: smoothChatContainerFadeIn 1.2s ease-out;
+        backdrop-filter: blur(20px);
     }
     
-    @keyframes chatContainerFadeIn {
+    @keyframes smoothChatContainerFadeIn {
         from {
             opacity: 0;
-            transform: scale(0.95) translateY(20px);
+            transform: scale(0.92) translateY(30px);
         }
         to {
             opacity: 1;
@@ -443,17 +464,18 @@ def inject_cinematic_css():
         }
     }
     
-    /* Animated messages */
+    /* Smooth animated messages with enhanced effects */
     .message {
-        margin-bottom: 1.5rem;
-        padding: 1.5rem;
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 16px;
-        border-left: 4px solid #8a63d2;
+        margin-bottom: 2rem;
+        padding: 1.8rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 20px;
+        border-left: 5px solid #8a63d2;
         position: relative;
         overflow: hidden;
-        animation: messageSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        transition: all 0.3s ease;
+        animation: smoothMessageSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
     }
     
     .message::before {
@@ -463,19 +485,19 @@ def inject_cinematic_css():
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(138, 99, 210, 0.1), transparent);
-        animation: messageShine 2s infinite;
+        background: linear-gradient(90deg, transparent, rgba(138, 99, 210, 0.2), transparent);
+        animation: smoothMessageShine 3s infinite;
     }
     
-    @keyframes messageShine {
+    @keyframes smoothMessageShine {
         0% { left: -100%; }
         100% { left: 100%; }
     }
     
-    @keyframes messageSlideIn {
+    @keyframes smoothMessageSlideIn {
         from {
             opacity: 0;
-            transform: translateX(-50px) scale(0.9);
+            transform: translateX(-60px) scale(0.95);
         }
         to {
             opacity: 1;
@@ -485,75 +507,76 @@ def inject_cinematic_css():
     
     .message:hover {
         background: rgba(255, 255, 255, 0.05);
-        transform: translateX(10px);
-        box-shadow: 0 5px 20px rgba(138, 99, 210, 0.2);
+        transform: translateX(12px) scale(1.02);
+        box-shadow: 0 8px 30px rgba(138, 99, 210, 0.3);
     }
     
-    /* Status indicators with pulse */
+    /* Smooth status indicators with enhanced pulse */
     .status-indicator {
         display: inline-flex;
         align-items: center;
-        gap: 0.8rem;
-        padding: 0.8rem 1.5rem;
-        background: rgba(138, 99, 210, 0.1);
-        border-radius: 24px;
-        font-size: 0.9rem;
+        gap: 1rem;
+        padding: 1rem 2rem;
+        background: rgba(138, 99, 210, 0.15);
+        border-radius: 30px;
+        font-size: 1rem;
         color: #8a63d2;
-        margin-bottom: 2rem;
-        border: 1px solid rgba(138, 99, 210, 0.2);
-        animation: statusPulse 3s ease-in-out infinite;
+        margin-bottom: 2.5rem;
+        border: 2px solid rgba(138, 99, 210, 0.3);
+        animation: smoothStatusPulse 4s ease-in-out infinite;
+        backdrop-filter: blur(10px);
     }
     
-    @keyframes statusPulse {
+    @keyframes smoothStatusPulse {
         0%, 100% { 
-            box-shadow: 0 0 0 0 rgba(138, 99, 210, 0.4);
+            box-shadow: 0 0 0 0 rgba(138, 99, 210, 0.5);
             transform: scale(1);
         }
         50% { 
-            box-shadow: 0 0 0 10px rgba(138, 99, 210, 0);
-            transform: scale(1.05);
+            box-shadow: 0 0 0 15px rgba(138, 99, 210, 0);
+            transform: scale(1.08);
         }
     }
     
     .status-dot {
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
         background: #10b981;
-        animation: dotPulse 2s infinite;
-        box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+        animation: smoothDotPulse 3s infinite;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
     }
     
-    @keyframes dotPulse {
+    @keyframes smoothDotPulse {
         0%, 100% { 
             transform: scale(1);
             opacity: 1;
         }
         50% { 
-            transform: scale(1.3);
-            opacity: 0.7;
+            transform: scale(1.4);
+            opacity: 0.8;
         }
     }
     
-    /* Custom scrollbar with animation */
+    /* Smooth custom scrollbar */
     ::-webkit-scrollbar {
-        width: 10px;
+        width: 12px;
     }
     
     ::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.02);
-        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 6px;
     }
     
     ::-webkit-scrollbar-thumb {
         background: linear-gradient(135deg, #8a63d2, #6d28d9);
-        border-radius: 5px;
+        border-radius: 6px;
         transition: all 0.3s ease;
     }
     
     ::-webkit-scrollbar-thumb:hover {
         background: linear-gradient(135deg, #a78bfa, #8a63d2);
-        transform: scaleX(1.2);
+        transform: scaleX(1.3);
     }
     
     /* Hide Streamlit elements */
@@ -561,53 +584,82 @@ def inject_cinematic_css():
     footer {visibility: hidden;}
     header {visibility: hidden;}
     
-    /* Loading animation */
+    /* Smooth loading animation */
     .loading-dots {
         display: inline-block;
+        font-weight: 500;
     }
     
     .loading-dots::after {
         content: '';
-        animation: loadingDots 1.5s infinite;
+        animation: smoothLoadingDots 2s infinite;
     }
     
-    @keyframes loadingDots {
-        0% { content: '.'; }
-        33% { content: '..'; }
-        66% { content: '...'; }
-        100% { content: '.'; }
+    @keyframes smoothLoadingDots {
+        0%, 20% { content: '.'; }
+        40% { content: '..'; }
+        60%, 100% { content: '...'; }
     }
     </style>
     """, unsafe_allow_html=True)
 
-def render_cinematic_header():
+def render_smooth_header():
     st.markdown("""
     <div class="hero-container">
-        <div class="studio-name">SCARABYNATH STUDIO</div>
+        <div class="particles" id="particles"></div>
+        <div class="de-studio">DE STUDIO</div>
         <h1 class="main-title">DARKRELAY<br><span class="title-accent">Anonymous Encrypted Platform</span></h1>
         <div class="tagline">
-            Where shadows meet security. Experience the next generation of encrypted communication 
-            with cinematic precision and uncompromising anonymity.
+            Complete anonymity. Military-grade encryption. Zero compromise.
         </div>
     </div>
+    
+    <script>
+        // Create floating particles
+        document.addEventListener('DOMContentLoaded', function() {
+            const particlesContainer = document.getElementById('particles');
+            if (particlesContainer) {
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 20 + 's';
+                    particle.style.animationDuration = (20 + Math.random() * 10) + 's';
+                    particle.style.width = (Math.random() * 6 + 2) + 'px';
+                    particle.style.height = particle.style.width;
+                    particle.style.background = `rgba(${138 + Math.random() * 20}, ${99 + Math.random() * 20}, ${210 + Math.random() * 20}, ${Math.random() * 0.5 + 0.5})`;
+                    particlesContainer.appendChild(particle);
+                }
+            }
+        });
+    </script>
     """, unsafe_allow_html=True)
 
 # ====================
-# AUTO-UPDATE MECHANISM
+# IMPROVED AUTO-UPDATE MECHANISM
 # ====================
-class AutoUpdater:
+class ImprovedAutoUpdater:
     def __init__(self):
         self.last_message_count = 0
-        self.update_interval = 2  # seconds
+        self.last_check_time = 0
+        self.update_interval = 1.5  # Reduced to 1.5 seconds for faster updates
     
     def check_for_updates(self, room_id: str) -> bool:
-        """Check if there are new messages"""
+        """Check if there are new messages with improved logic"""
         global_state = get_global_state()
         room_data = global_state.get_room(room_id)
         if not room_data:
             return False
         
         current_count = len(room_data.get("messages", []))
+        current_time = time.time()
+        
+        # Check if enough time has passed since last update
+        if current_time - self.last_check_time < self.update_interval:
+            return False
+            
+        self.last_check_time = current_time
+        
         if current_count != self.last_message_count:
             self.last_message_count = current_count
             return True
@@ -624,9 +676,9 @@ def initialize_session():
     if 'room_name' not in st.session_state:
         st.session_state.room_name = ""
     if 'auto_updater' not in st.session_state:
-        st.session_state.auto_updater = AutoUpdater()
+        st.session_state.auto_updater = ImprovedAutoUpdater()
     if 'message_key' not in st.session_state:
-        st.session_state.message_key = 0  # Use this instead of direct widget state
+        st.session_state.message_key = 0
     if 'initialized' not in st.session_state:
         st.session_state.initialized = True
 
@@ -636,54 +688,12 @@ def generate_room_id(name: str) -> str:
     return f"{clean_name}-{unique_part}"
 
 # ====================
-# NEW FEATURES
-# ====================
-def message_reactions(message_id: str, room_id: str):
-    """Add reaction system to messages"""
-    col1, col2, col3, col4 = st.columns([1, 1, 1, 6])
-    
-    reactions = ["🔥", "💯", "🎯", "⚡"]
-    for i, reaction in enumerate(reactions):
-        with [col1, col2, col3][i]:
-            if st.button(f"{reaction}", key=f"react_{message_id}_{i}", help=f"React with {reaction}"):
-                st.toast(f"Reacted with {reaction}!")
-                time.sleep(0.5)
-                st.rerun()
-
-def typing_indicator():
-    """Show typing indicator"""
-    return """
-    <div class="message" style="opacity: 0.7; border-left-color: #f59e0b;">
-        <div class="message-content">
-            <span class="loading-dots">Someone is typing</span>
-        </div>
-    </div>
-    """
-
-def message_encryption_indicator(encrypted: bool = True):
-    """Show encryption status with animation"""
-    if encrypted:
-        return """
-        <div style="display: inline-flex; align-items: center; gap: 0.5rem; color: #10b981; font-size: 0.8rem;">
-            <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></div>
-            🔒 ENCRYPTED
-        </div>
-        """
-    else:
-        return """
-        <div style="display: inline-flex; align-items: center; gap: 0.5rem; color: #ef4444; font-size: 0.8rem;">
-            <div style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: pulse 2s infinite;"></div>
-            ⚠️ UNENCRYPTED
-        </div>
-        """
-
-# ====================
-# UI COMPONENTS WITH ENHANCED FEATURES
+# UI COMPONENTS FOR ANONYMOUS PLATFORM
 # ====================
 def create_room_section():
     with st.container():
         st.markdown('<div class="creation-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title">🛡️ Create Secure Channel</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">🔐 CREATE SECURE CHANNEL</div>', unsafe_allow_html=True)
         
         col1, col2 = st.columns([3, 1])
         with col1:
@@ -694,7 +704,7 @@ def create_room_section():
                 label_visibility="collapsed"
             )
         with col2:
-            create_clicked = st.button("🔐 CREATE CHANNEL", type="primary", use_container_width=True)
+            create_clicked = st.button("⚡ CREATE", type="primary", use_container_width=True)
         
         if create_clicked and room_name.strip():
             room_id = generate_room_id(room_name.strip())
@@ -704,30 +714,30 @@ def create_room_section():
             if created:
                 st.session_state.current_room = room_id
                 st.session_state.room_name = room_name.strip()
-                st.success(f"✅ Secure channel created: **{room_id}**")
+                st.success(f"✅ Channel created: **{room_id}**")
                 st.balloons()
-                time.sleep(1)
+                time.sleep(0.5)
                 st.rerun()
             else:
-                st.error("❌ Channel already exists")
+                st.error("❌ Channel exists")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
 def join_room_section():
     with st.container():
         st.markdown('<div class="creation-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title">🔗 Join Existing Channel</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">🔗 JOIN CHANNEL</div>', unsafe_allow_html=True)
         
         join_id = st.text_input(
             "Channel ID",
-            placeholder="Enter channel ID (e.g., CHAT-AB38)...",
+            placeholder="Enter channel ID...",
             key="join_room_input",
             label_visibility="collapsed"
         )
         
         col1, col2 = st.columns([1, 1])
         with col1:
-            if st.button("🔓 JOIN CHANNEL", use_container_width=True):
+            if st.button("⚡ JOIN", use_container_width=True):
                 if join_id.strip():
                     global_state = get_global_state()
                     room_data = global_state.get_room(join_id.strip())
@@ -738,8 +748,11 @@ def join_room_section():
                     else:
                         st.error("❌ Channel not found")
         
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_add_html=True)
 
+# ====================
+# IMPROVED CHAT INTERFACE WITH BETTER AUTO-UPDATE
+# ====================
 def chat_interface():
     if not st.session_state.current_room:
         return
@@ -752,11 +765,15 @@ def chat_interface():
         st.rerun()
         return
     
-    # Auto-update mechanism
-    placeholder = st.empty()
+    # Create placeholder for auto-updating content
+    chat_placeholder = st.empty()
     
-    # Chat header with enhanced UI and error handling
-    col1, col2, col3 = st.columns([2, 1, 1])
+    # Improved auto-update mechanism
+    if st.session_state.auto_updater.check_for_updates(st.session_state.current_room):
+        st.rerun()
+    
+    # Chat header with enhanced UI
+    col1, col2 = st.columns([3, 1])
     with col1:
         st.markdown(f"""
         <div class="chat-header">
@@ -768,33 +785,7 @@ def chat_interface():
         """, unsafe_allow_html=True)
     
     with col2:
-        # Room stats with error handling
-        try:
-            stats = global_state.get_room_stats(st.session_state.current_room)
-            if stats:
-                last_activity_time = datetime.fromtimestamp(stats['last_activity']).strftime('%H:%M') if stats['last_activity'] else 'now'
-                st.markdown(f"""
-                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">
-                    💬 {stats['message_count']} messages<br>
-                    🕒 Active {last_activity_time}
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.markdown("""
-                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">
-                    💬 0 messages<br>
-                    🕒 Just created
-                </div>
-                """, unsafe_allow_html=True)
-        except Exception as e:
-            st.markdown("""
-            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.6);">
-                📊 Stats unavailable
-            </div>
-            """, unsafe_allow_html=True)
-    
-    with col3:
-        if st.button("🚪 Leave Channel", type="secondary", use_container_width=True):
+        if st.button("🚪 LEAVE", type="secondary", use_container_width=True):
             st.session_state.current_room = None
             st.rerun()
     
@@ -802,12 +793,12 @@ def chat_interface():
     st.markdown("""
     <div class="status-indicator">
         <div class="status-dot"></div>
-        🔒 ENCRYPTED • LIVE • SECURE • REAL-TIME
+        🔒 ENCRYPTED • LIVE • ANONYMOUS
     </div>
     """, unsafe_allow_html=True)
     
-    # Messages container with auto-refresh
-    with placeholder.container():
+    # Display messages with improved animations
+    with chat_placeholder.container():
         st.markdown('<div class="chat-container">', unsafe_allow_html=True)
         
         messages = room_data.get("messages", [])
@@ -816,14 +807,14 @@ def chat_interface():
         if not messages:
             st.markdown("""
             <div class="message">
-                <div class="message-content" style="text-align: center; color: rgba(255, 255, 255, 0.5); font-style: italic;">
+                <div class="message-content" style="text-align: center; color: rgba(255, 255, 255, 0.6); font-style: italic;">
                     🔓 No messages yet. Start the encrypted conversation...
                 </div>
             </div>
             """, unsafe_allow_html=True)
         
-        # Display messages with enhanced features and error handling
-        for i, msg in enumerate(messages[-50:]):
+        # Display messages with smooth animations
+        for i, msg in enumerate(messages[-30:]):  # Show last 30 messages
             try:
                 decrypted = encryptor.decrypt(msg["encrypted_message"])
                 msg_time = datetime.fromtimestamp(msg["timestamp"]).strftime("%H:%M:%S")
@@ -849,43 +840,36 @@ def chat_interface():
                     </div>
                     <div class="message-content">{decrypted}</div>
                     <div class="message-meta">
-                        {chain_status} • Hash: {msg.get('hash', 'N/A')[:8]}... • 
-                        {message_encryption_indicator(True)}
+                        {chain_status} • Hash: {msg.get('hash', 'N/A')[:8]}...
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
-                
-                # Add reactions for recent messages
-                if i >= len(messages) - 10:
-                    message_reactions(msg.get('message_id', ''), st.session_state.current_room)
                 
             except Exception as e:
                 st.markdown(f"""
                 <div class="message">
                     <div class="message-content" style="color: rgba(255, 255, 255, 0.5); font-style: italic;">
-                        [🔒 Encrypted message - Unable to decrypt]
+                        [🔒 Encrypted message]
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # FIXED: Use a key-based approach instead of modifying widget state
-    message_key = f"message_input_{st.session_state.get('message_key', 0)}"
-    
-    # Enhanced message input with typing indicator
+    # Message input with improved clearing mechanism
     col1, col2 = st.columns([4, 1])
     with col1:
+        message_key = f"message_input_{st.session_state.get('message_key', 0)}"
         message = st.text_input(
-            "🔒 Type your encrypted message...",
+            "🔒 Type your message...",
             key=message_key,
             label_visibility="collapsed",
-            placeholder="Your message is encrypted end-to-end..."
+            placeholder="Your message is encrypted..."
         )
     with col2:
-        send_clicked = st.button("📤 SEND", type="primary", use_container_width=True)
+        send_clicked = st.button("⚡ SEND", type="primary", use_container_width=True)
     
-    # Handle message sending
+    # Handle message sending with improved flow
     if send_clicked and message and message.strip():
         # Get previous hash with error handling
         previous_hash = "0" * 64
@@ -893,19 +877,19 @@ def chat_interface():
             previous_hash = messages[-1].get("hash", "0" * 64)
         
         # Show encryption process
-        with st.spinner("🔐 Encrypting message..."):
-            time.sleep(0.3)
+        with st.spinner("🔐 Encrypting..."):
+            time.sleep(0.2)  # Reduced delay for better responsiveness
             try:
                 encrypted_msg = encryptor.encrypt(message.strip())
             except Exception as e:
-                st.error("❌ Failed to encrypt message")
+                st.error("❌ Encryption failed")
                 return
         
         # Create data for hashing
         data_to_hash = f"{encrypted_msg}{previous_hash}{time.time()}"
         current_hash = encryptor.calculate_hash(data_to_hash)
         
-        # Create message object with error handling
+        # Create message object
         msg_data = {
             "encrypted_message": encrypted_msg,
             "timestamp": time.time(),
@@ -918,122 +902,45 @@ def chat_interface():
         
         # Add to global state
         if global_state.add_message(st.session_state.current_room, msg_data):
-            st.toast("✅ Message sent securely!", icon="🔒")
-            # Increment the key to force a new widget instance (clears the input)
+            st.toast("✅ Sent!", icon="🔒")
+            # Increment key to clear input
             st.session_state.message_key = st.session_state.get('message_key', 0) + 1
             st.rerun()
         else:
-            st.error("❌ Failed to send message")
-    
-    # Auto-refresh every 2 seconds
-    time.sleep(2)
-    if st.session_state.auto_updater.check_for_updates(st.session_state.current_room):
-        st.rerun()
-
-def display_active_channels():
-    global_state = get_global_state()
-    rooms = global_state.get_rooms()
-    
-    if not rooms:
-        st.markdown("""
-        <div class="creation-card">
-            <div style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem;">
-                🔓 No active channels. Create one to start secure communication.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-        return
-    
-    st.markdown('<div class="creation-card">', unsafe_allow_html=True)
-    st.markdown('<div class="card-title">🔥 Active Secure Channels</div>', unsafe_allow_html=True)
-    
-    # Sort rooms by activity (most recent first)
-    sorted_rooms = sorted(rooms.items(), key=lambda x: x[1].get('created_at', 0), reverse=True)
-    
-    for room_id, room_data in sorted_rooms[:10]:
-        room_name = room_data.get("name", "Unknown")
-        message_count = len(room_data.get("messages", []))
-        created_time = datetime.fromtimestamp(room_data.get("created_at", 0)).strftime("%H:%M")
-        
-        # Calculate activity level
-        last_activity = max([msg.get("timestamp", 0) for msg in room_data.get("messages", [])], default=0)
-        time_since_activity = time.time() - last_activity if last_activity else float('inf')
-        activity_status = "🔥 Active" if time_since_activity < 300 else "💤 Idle"  # 5 minutes
-        
-        col1, col2, col3 = st.columns([2, 1, 1])
-        with col1:
-            st.markdown(f"""
-            <div style="margin-bottom: 1rem;">
-                <strong style="color: #ffffff;">🔒 {room_name}</strong><br>
-                <span style="color: rgba(255, 255, 255, 0.5); font-size: 0.8rem;">ID: {room_id}</span>
-            </div>
-            """, unsafe_allow_html=True)
-        with col2:
-            st.markdown(f"""
-            <div style="color: rgba(255, 255, 255, 0.6); font-size: 0.9rem;">
-                {message_count} msgs<br>
-                <small>{activity_status}</small>
-            </div>
-            """, unsafe_allow_html=True)
-        with col3:
-            if st.button("🔓 Join", key=f"join_{room_id}", use_container_width=True):
-                st.session_state.current_room = room_id
-                st.session_state.room_name = room_name
-                st.rerun()
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+            st.error("❌ Failed to send")
 
 # ====================
-# ENHANCED SIDEBAR WITH PROPER ERROR HANDLING
+# MAIN APP WITH IMPROVEMENTS
 # ====================
-def create_enhanced_sidebar():
+def main():
+    st.set_page_config(
+        page_title="DarkRelay • DE STUDIO",
+        page_icon="🔒",
+        layout="wide",
+        initial_sidebar_state="collapsed"
+    )
+    
+    inject_smooth_animations()
+    render_smooth_header()
+    initialize_session()
+    
+    # Create enhanced sidebar (without active channels for anonymity)
     with st.sidebar:
-        st.markdown("### ⚙️ Channel Settings")
+        st.markdown("### ⚙️ Settings")
         
         if st.session_state.current_room:
-            st.markdown(f"**Current:** {st.session_state.room_name}")
+            st.markdown(f"**Channel:** {st.session_state.room_name}")
             
-            # Clear history with confirmation
             if st.button("🗑️ Clear History", use_container_width=True):
-                if st.checkbox("⚠️ Confirm clear all messages?"):
+                if st.checkbox("⚠️ Confirm?"):
                     global_state = get_global_state()
                     if global_state.clear_room_messages(st.session_state.current_room):
-                        st.success("✅ History cleared!")
-                        time.sleep(1)
+                        st.success("✅ Cleared!")
+                        time.sleep(0.5)
                         st.rerun()
-                    else:
-                        st.error("❌ Failed to clear history")
-            
-            # Export functionality
-            global_state = get_global_state()
-            room_data = global_state.get_room(st.session_state.current_room)
-            if room_data:
-                messages = room_data.get("messages", [])
-                export_data = {
-                    "room_name": st.session_state.room_name,
-                    "room_id": st.session_state.current_room,
-                    "exported_at": datetime.now().isoformat(),
-                    "message_count": len(messages),
-                    "messages": [
-                        {
-                            "timestamp": msg.get("timestamp"),
-                            "user_id": msg.get("user_id")[-6:],
-                            "hash": msg.get("hash")[:8] + "...",
-                            "verified": True
-                        }
-                        for msg in messages[-100:]  # Last 100 messages
-                    ]
-                }
-                st.download_button(
-                    "💾 Export Chat",
-                    data=json.dumps(export_data, indent=2),
-                    file_name=f"{st.session_state.room_name}_{int(time.time())}.json",
-                    mime="application/json",
-                    use_container_width=True
-                )
         
         st.markdown("---")
-        st.markdown("### 📊 Statistics")
+        st.markdown("### 📊 Stats")
         
         try:
             global_state = get_global_state()
@@ -1045,62 +952,23 @@ def create_enhanced_sidebar():
                 st.metric("Channels", total_rooms)
             with col2:
                 st.metric("Messages", total_messages)
-        except Exception as e:
+        except Exception:
             st.error("Stats unavailable")
         
         st.markdown("---")
-        st.markdown("### 🎨 Appearance")
+        st.markdown("### 🎨 Theme")
         
-        # Theme selector
-        theme = st.selectbox("Theme", ["Cinematic Dark", "Pure Black", "Matrix Green", "Neon Purple"], 
-                           help="Change visual theme")
+        theme = st.selectbox("Appearance", ["Cinematic Dark", "Pure Black", "Matrix Green", "Neon Purple"])
         
         if theme == "Matrix Green":
             st.markdown("""
             <style>
-            .stApp { 
-                background: #000000 !important;
-                background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%);
-            }
-            .main-title { 
-                background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%) !important;
-            }
+            .stApp { background: #000000 !important; background-image: radial-gradient(circle at 50% 50%, rgba(0, 255, 0, 0.1) 0%, transparent 50%); }
+            .main-title { background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%) !important; }
             .status-indicator { color: #00ff00; border-color: #00ff00; }
             .status-dot { background: #00ff00; }
             </style>
             """, unsafe_allow_html=True)
-        elif theme == "Neon Purple":
-            st.markdown("""
-            <style>
-            .stApp { 
-                background: #0a0a0a !important;
-                background-image: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.2) 0%, transparent 50%);
-            }
-            .main-title { 
-                background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%) !important;
-            }
-            .status-indicator { color: #a855f7; border-color: #a855f7; }
-            .status-dot { background: #a855f7; }
-            </style>
-            """, unsafe_allow_html=True)
-
-# ====================
-# MAIN APP WITH ALL FIXES
-# ====================
-def main():
-    st.set_page_config(
-        page_title="DarkRelay • Scarabynath",
-        page_icon="🔒",
-        layout="wide",
-        initial_sidebar_state="collapsed"
-    )
-    
-    inject_cinematic_css()
-    render_cinematic_header()
-    initialize_session()
-    
-    # Create enhanced sidebar
-    create_enhanced_sidebar()
     
     # Main content
     if st.session_state.current_room:
@@ -1114,8 +982,13 @@ def main():
         with col2:
             join_room_section()
         
+        # Removed active channels display for anonymity
         st.markdown("<br><br>", unsafe_allow_html=True)
-        display_active_channels()
+        st.markdown("""
+        <div style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem; font-style: italic;">
+            🔒 Channels are private and not displayed for maximum anonymity
+        </div>
+        """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
