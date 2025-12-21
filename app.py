@@ -606,7 +606,7 @@ def create_room_section():
 def join_room_section():
     with st.container():
         st.markdown('<div class="creation-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title">🔗 JOIN CHANNEL</div>', unsafe_for_html=True)
+        st.markdown('<div class="card-title">🔗 JOIN CHANNEL</div>', unsafe_allow_html=True)
         
         join_id = st.text_input(
             "Channel ID",
