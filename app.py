@@ -144,14 +144,12 @@ class PersistentGlobalState:
     
     def should_cleanup_messages(self, room_id: str) -> bool:
         """Check if messages should be cleaned up (no active users)"""
-        with self._lock:
-            active_users = self.get_active_users(room_id)
-            return len(active_users) == 0  # No active users
+        active_users = self.get_active_users(room_id)
+        return len(active_users) == 0  # No active users
     
     def get_channel_theme(self, room_id: str) -> str:
         """Get the theme for a specific channel"""
-        with self._lock:
-            return self.CHANNEL_THEMES.get(room_id, "Cinematic Dark")
+        return self.CHANNEL_THEMES.get(room_id, "Cinematic Dark")
     
     def set_channel_theme(self, room_id: str, theme_name: str):
         """Set the theme for a specific channel"""
@@ -161,20 +159,19 @@ class PersistentGlobalState:
     
     def get_room_stats(self, room_id: str) -> Optional[Dict]:
         """Safely get room statistics"""
-        with self._lock:
-            try:
-                if room_id in self.ROOMS:
-                    room = self.ROOMS[room_id]
-                    messages = room.get("messages", [])
-                    return {
-                        "message_count": len(messages),
-                        "created_at": room.get("created_at", 0),
-                        "last_activity": max([msg.get("timestamp", 0) for msg in messages], default=0)
-                    }
-                return None
-            except Exception as e:
-                print(f"Error getting room stats: {e}")
-                return None
+        try:
+            if room_id in self.ROOMS:
+                room = self.ROOMS[room_id]
+                messages = room.get("messages", [])
+                return {
+                    "message_count": len(messages),
+                    "created_at": room.get("created_at", 0),
+                    "last_activity": max([msg.get("timestamp", 0) for msg in messages], default=0)
+                }
+            return None
+        except Exception as e:
+            print(f"Error getting room stats: {e}")
+            return None
     
     def clear_room_messages(self, room_id: str) -> bool:
         """Clear all messages from a room"""
@@ -213,6 +210,250 @@ class EncryptionHandler:
     @staticmethod
     def calculate_hash(data: str) -> str:
         return hashlib.sha256(data.encode()).hexdigest()
+
+# ====================
+# PROFESSIONAL STYLING WITH OPTIMIZED SIZING
+# ====================
+def inject_professional_styles():
+    st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+    
+    /* Professional base styling */
+    .stApp {
+        background: #000000 !important;
+        transition: all 0.8s ease;
+    }
+    
+    .main {
+        background: transparent !important;
+    }
+    
+    /* Professional hero section */
+    .hero-container {
+        text-align: left;
+        padding: 4rem 0 5rem 0;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(138, 99, 210, 0.2);
+    }
+    
+    .de-studio {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #8a63d2;
+        letter-spacing: 0.5em;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 20px rgba(138, 99, 210, 0.5);
+    }
+    
+    .main-title {
+        font-family: 'Inter', sans-serif;
+        font-weight: 800;
+        font-size: 4.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #a78bfa 40%, #8a63d2 70%, #6d28d9 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+        line-height: 1.1;
+        letter-spacing: -0.04em;
+    }
+    
+    .title-accent {
+        font-weight: 300;
+        font-size: 1.8rem;
+        display: block;
+        margin-top: 0.5rem;
+        letter-spacing: 0.05em;
+    }
+    
+    .tagline {
+        font-family: 'Inter', sans-serif;
+        font-weight: 300;
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-top: 2rem;
+        max-width: 600px;
+        line-height: 1.7;
+    }
+    
+    /* Professional cards with optimal sizing */
+    .creation-card {
+        background: rgba(15, 15, 20, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin: 2rem 0;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
+    }
+    
+    .creation-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(138, 99, 210, 0.3);
+        border-color: rgba(138, 99, 210, 0.3);
+    }
+    
+    .card-title {
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: #8a63d2;
+        margin-bottom: 2rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        position: relative;
+    }
+    
+    .card-title::after {
+        content: '';
+        position: absolute;
+        bottom: -0.5rem;
+        left: 0;
+        width: 50px;
+        height: 2px;
+        background: linear-gradient(90deg, #8a63d2, transparent);
+    }
+    
+    /* Optimized input fields - professional sizing */
+    .stTextInput > div > div > input {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: #ffffff !important;
+        border-radius: 12px !important;
+        font-family: 'Inter', sans-serif !important;
+        font-size: 1rem !important;
+        padding: 0.8rem 1.2rem !important;
+        transition: all 0.3s ease !important;
+        backdrop-filter: blur(5px);
+    }
+    
+    .stTextInput > div > div > input:focus {
+        border-color: #8a63d2 !important;
+        background: rgba(138, 99, 210, 0.05) !important;
+        box-shadow: 0 0 0 3px rgba(138, 99, 210, 0.2) !important;
+        transform: scale(1.02);
+    }
+    
+    /* Optimized buttons - professional and proportional */
+    .stButton > button {
+        background: linear-gradient(135deg, #8a63d2 0%, #6d28d9 100%) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 0.7rem 1.5rem !important;
+        font-family: 'Space Grotesk', sans-serif !important;
+        font-weight: 500 !important;
+        font-size: 0.9rem !important;
+        letter-spacing: 0.05em !important;
+        transition: all 0.3s ease !important;
+        width: 100%;
+        text-transform: uppercase;
+        cursor: pointer !important;
+        box-shadow: 0 4px 15px rgba(138, 99, 210, 0.3);
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(138, 99, 210, 0.4) !important;
+        background: linear-gradient(135deg, #946be6 0%, #7c3aed 100%) !important;
+    }
+    
+    /* Professional chat container */
+    .chat-container {
+        background: rgba(15, 15, 20, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-top: 2rem;
+        max-height: 600px;
+        overflow-y: auto;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
+    }
+    
+    /* Professional messages */
+    .message {
+        margin-bottom: 1.5rem;
+        padding: 1.2rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        border-left: 4px solid #8a63d2;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+    
+    .message:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateX(5px);
+        box-shadow: 0 5px 20px rgba(138, 99, 210, 0.2);
+    }
+    
+    /* Professional status indicators */
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.6rem 1.2rem;
+        background: rgba(138, 99, 210, 0.1);
+        border-radius: 20px;
+        font-size: 0.85rem;
+        color: #8a63d2;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(138, 99, 210, 0.2);
+        backdrop-filter: blur(5px);
+    }
+    
+    .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #10b981;
+        animation: pulse 2s infinite;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #8a63d2, #6d28d9);
+        border-radius: 4px;
+    }
+    
+    /* Hide Streamlit elements */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    </style>
+    """, unsafe_allow_html=True)
+
+def render_header():
+    st.markdown("""
+    <div class="hero-container">
+        <div class="de-studio">DE STUDIO</div>
+        <h1 class="main-title">DARKRELAY<br><span class="title-accent">Anonymous Encrypted Platform</span></h1>
+        <div class="tagline">
+            Complete anonymity. Military-grade encryption. Zero compromise.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ====================
 # ULTRA-FAST AUTO-UPDATE MECHANISM (0.5 SECONDS)
@@ -269,83 +510,59 @@ def generate_room_id(name: str) -> str:
     return f"{clean_name}-{unique_part}"
 
 # ====================
-# FIXED ACTIVE USERS SIDEBAR WITH PROPER ERROR HANDLING
+# FIXED ACTIVE USERS SIDEBAR
 # ====================
 def display_active_users_sidebar(room_id: str):
-    """Display active users in the current room with proper error handling"""
+    """Display active users in the current room - FIXED VERSION"""
     if not room_id:
         return
     
-    try:
-        global_state = get_global_state()
-        
-        with st.sidebar:
-            st.markdown("### 👥 Active Users")
-            
-            # Update current user activity with error handling
-            try:
-                global_state.update_user_activity(room_id, st.session_state.user_id)
-            except Exception as e:
-                print(f"Error updating user activity: {e}")
-            
-            # Cleanup inactive users
-            try:
-                removed_count = global_state.cleanup_inactive_users(room_id)
-            except Exception as e:
-                print(f"Error cleaning up inactive users: {e}")
-                removed_count = 0
-            
-            # Get active users with error handling
-            try:
-                active_users = global_state.get_active_users(room_id)
-            except Exception as e:
-                print(f"Error getting active users: {e}")
-                active_users = {}
-            
-            if active_users:
-                st.markdown(f"**{len(active_users)}** users online")
-                
-                for user_id, last_seen in active_users.items():
-                    is_current_user = user_id == st.session_state.user_id
-                    user_display = "👤 You" if is_current_user else f"👤 User_{user_id[-6:]}"
-                    status_color = "#10b981" if is_current_user else "#8a63d2"
-                    
-                    st.markdown(f"""
-                    <div style="
-                        padding: 0.6rem 1rem; 
-                        margin: 0.25rem 0; 
-                        background: rgba({status_color}, 0.1); 
-                        border-radius: 8px; 
-                        border-left: 3px solid {status_color};
-                        font-size: 0.9rem;
-                    ">
-                        {user_display}
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.markdown("*No active users*")
-            
-            # Check if should cleanup messages (no active users)
-            try:
-                if global_state.should_cleanup_messages(room_id):
-                    room_data = global_state.get_room(room_id)
-                    if room_data and len(room_data.get("messages", [])) > 0:
-                        st.warning("⚠️ No active users - messages will be cleared")
-                        
-                        if st.button("🗑️ Clear All Messages", use_container_width=True):
-                            try:
-                                if global_state.clear_room_messages(room_id):
-                                    st.success("✅ Messages cleared")
-                                    st.rerun()
-                            except Exception as e:
-                                st.error("❌ Failed to clear messages")
-                                print(f"Error clearing messages: {e}")
-            except Exception as e:
-                print(f"Error checking cleanup status: {e}")
+    global_state = get_global_state()
     
-    except Exception as e:
-        st.error("❌ Error loading active users")
-        print(f"Error in display_active_users_sidebar: {e}")
+    with st.sidebar:
+        st.markdown("### 👥 Active Users")
+        
+        # Update current user activity
+        global_state.update_user_activity(room_id, st.session_state.user_id)
+        
+        # Cleanup inactive users
+        removed_count = global_state.cleanup_inactive_users(room_id)
+        
+        # Get active users
+        active_users = global_state.get_active_users(room_id)
+        
+        if active_users:
+            st.markdown(f"**{len(active_users)}** users online")
+            
+            for user_id, last_seen in active_users.items():
+                is_current_user = user_id == st.session_state.user_id
+                user_display = "👤 You" if is_current_user else f"👤 User_{user_id[-6:]}"
+                status_color = "#10b981" if is_current_user else "#8a63d2"
+                
+                st.markdown(f"""
+                <div style="
+                    padding: 0.6rem 1rem; 
+                    margin: 0.25rem 0; 
+                    background: rgba({status_color}, 0.1); 
+                    border-radius: 8px; 
+                    border-left: 3px solid {status_color};
+                    font-size: 0.9rem;
+                ">
+                    {user_display}
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.markdown("*No active users*")
+        
+        # Check if should cleanup messages (no active users)
+        if global_state.should_cleanup_messages(room_id):
+            if len(global_state.get_room(room_id).get("messages", [])) > 0:
+                st.warning("⚠️ No active users - messages will be cleared")
+                
+                if st.button("🗑️ Clear All Messages", use_container_width=True):
+                    if global_state.clear_room_messages(room_id):
+                        st.success("✅ Messages cleared")
+                        st.rerun()
 
 # ====================
 # PROFESSIONAL UI COMPONENTS WITH OPTIMIZED SIZING
@@ -385,8 +602,8 @@ def create_room_section():
 
 def join_room_section():
     with st.container():
-        st.markdown('<div class="creation-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title">🔗 JOIN CHANNEL</div>', unsafe_allow_html=True)
+        st.markdown('<div class="creation-card">', unsafe_for_html=True)
+        st.markdown('<div class="card-title">🔗 JOIN CHANNEL</div>', unsafe_for_html=True)
         
         join_id = st.text_input(
             "Channel ID",
@@ -408,7 +625,7 @@ def join_room_section():
                     else:
                         st.error("❌ Channel not found")
         
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_for_html=True)
 
 # ====================
 # ULTRA-FAST CHAT INTERFACE WITH PROFESSIONAL STYLING
@@ -447,7 +664,7 @@ def chat_interface():
                 <span class="room-id">{st.session_state.current_room}</span>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """, unsafe_for_html=True)
     
     with col2:
         if st.button("🚪 LEAVE", type="secondary", use_container_width=True):
@@ -460,11 +677,11 @@ def chat_interface():
         <div class="status-dot"></div>
         🔒 ENCRYPTED • LIVE • ANONYMOUS • 0.5s UPDATES
     </div>
-    """, unsafe_allow_html=True)
+    """, unsafe_for_html=True)
     
     # Display messages with professional styling and ultra-fast updates
     with chat_placeholder.container():
-        st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+        st.markdown('<div class="chat-container">', unsafe_for_html=True)
         
         messages = room_data.get("messages", [])
         encryptor = EncryptionHandler()
@@ -481,7 +698,7 @@ def chat_interface():
                     🔓 No messages yet. Start the encrypted conversation...
                 </div>
             </div>
-            """, unsafe_allow_html=True)
+            """, unsafe_for_html=True)
         
         # Display messages with professional animations (last 50 messages)
         for i, msg in enumerate(messages[-50:]):
@@ -513,7 +730,7 @@ def chat_interface():
                         {chain_status} • Hash: {msg.get('hash', 'N/A')[:8]}...
                     </div>
                 </div>
-                """, unsafe_allow_html=True)
+                """, unsafe_for_html=True)
                 
             except Exception as e:
                 st.markdown(f"""
@@ -613,12 +830,12 @@ def main():
             with col2:
                 join_room_section()
             
-            st.markdown("<br><br>", unsafe_allow_html=True)
+            st.markdown("<br><br>", unsafe_for_html=True)
             st.markdown("""
             <div style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem; font-style: italic;">
                 🔒 Channels are private and not displayed for maximum anonymity
             </div>
-            """, unsafe_allow_html=True)
+            """, unsafe_for_html=True)
 
 if __name__ == "__main__":
     main()
