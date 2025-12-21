@@ -144,6 +144,8 @@ class PersistentGlobalState:
     
     def should_cleanup_messages(self, room_id: str) -> bool:
         """Check if messages should be cleaned up (no active users)"""
+        if not room_id:
+            return False
         active_users = self.get_active_users(room_id)
         return len(active_users) == 0  # No active users
     
@@ -510,65 +512,6 @@ def generate_room_id(name: str) -> str:
     return f"{clean_name}-{unique_part}"
 
 # ====================
-# FIXED ACTIVE USERS SIDEBAR
-# ====================
-def display_active_users_sidebar(room_id: str):
-    """Display active users in the current room - FIXED VERSION"""
-    if not room_id:
-        return
-    
-    try:
-        global_state = get_global_state()
-        
-        with st.sidebar:
-            st.markdown("### 👥 Active Users")
-            
-            # Update current user activity
-            global_state.update_user_activity(room_id, st.session_state.user_id)
-            
-            # Cleanup inactive users
-            removed_count = global_state.cleanup_inactive_users(room_id)
-            
-            # Get active users
-            active_users = global_state.get_active_users(room_id)
-            
-            if active_users:
-                st.markdown(f"**{len(active_users)}** users online")
-                
-                for user_id, last_seen in active_users.items():
-                    is_current_user = user_id == st.session_state.user_id
-                    user_display = "👤 You" if is_current_user else f"👤 User_{user_id[-6:]}"
-                    status_color = "16, 185, 129" if is_current_user else "138, 99, 210"
-                    
-                    st.markdown(f"""
-                    <div style="
-                        padding: 0.6rem 1rem; 
-                        margin: 0.25rem 0; 
-                        background: rgba({status_color}, 0.1); 
-                        border-radius: 8px; 
-                        border-left: 3px solid rgb({status_color});
-                        font-size: 0.9rem;
-                    ">
-                        {user_display}
-                    </div>
-                    """, unsafe_allow_html=True)
-            else:
-                st.markdown("*No active users*")
-            
-            # Check if should cleanup messages (no active users)
-            room_data = global_state.get_room(room_id)
-            if room_data and global_state.should_cleanup_messages(room_id):
-                if len(room_data.get("messages", [])) > 0:
-                    st.warning("⚠️ No active users - messages will be cleared")
-                    
-                    if st.button("🗑️ Clear All Messages", use_container_width=True):
-                        if global_state.clear_room_messages(room_id):
-                            st.success("✅ Messages cleared")
-                            st.rerun()
-    except Exception as e:
-        print(f"Error in display_active_users_sidebar: {e}")
-
-# ====================
 # PROFESSIONAL UI COMPONENTS WITH OPTIMIZED SIZING
 # ====================
 def create_room_section():
@@ -690,11 +633,6 @@ def chat_interface():
         messages = room_data.get("messages", [])
         encryptor = EncryptionHandler()
         
-        # Check if should cleanup messages (no active users)
-        if global_state.should_cleanup_messages(st.session_state.current_room):
-            if len(messages) > 0:
-                st.warning("⚠️ No active users detected - messages will be cleared when all users leave")
-        
         if not messages:
             st.markdown("""
             <div class="message">
@@ -815,11 +753,7 @@ def main():
     render_header()
     initialize_session()
     
-    # Show enhanced active users sidebar when in a room
-    if st.session_state.current_room:
-        display_active_users_sidebar(st.session_state.current_room)
-    
-    # Main content area
+    # Main content area - removed active users sidebar
     main_area = st.container()
     
     with main_area:
