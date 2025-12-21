@@ -313,14 +313,14 @@ def inject_dynamic_background(theme_name: str, room_id: str):
     st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
 
 # ====================
-# ENHANCED ANIMATIONS WITH SOLID MOTIONS
+# PROFESSIONAL STYLING WITH OPTIMIZED SIZING
 # ====================
-def inject_smooth_animations():
+def inject_professional_styles():
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
     
-    /* Base professional styling */
+    /* Professional base styling */
     .stApp {
         background: #000000 !important;
         transition: all 0.8s ease;
@@ -330,470 +330,219 @@ def inject_smooth_animations():
         background: transparent !important;
     }
     
-    /* Professional hero section with enhanced animations */
+    /* Professional hero section */
     .hero-container {
         text-align: left;
-        padding: 6rem 0 7rem 0;
+        padding: 4rem 0 5rem 0;
         position: relative;
         overflow: hidden;
         border-bottom: 1px solid rgba(138, 99, 210, 0.2);
     }
     
-    /* Enhanced floating particles */
-    .particles {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        pointer-events: none;
-    }
-    
-    .particle {
-        position: absolute;
-        border-radius: 50%;
-        animation: float 25s infinite linear;
-    }
-    
-    @keyframes float {
-        0% {
-            transform: translateY(100vh) translateX(0) scale(0);
-            opacity: 0;
-        }
-        10% {
-            opacity: 1;
-        }
-        90% {
-            opacity: 1;
-        }
-        100% {
-            transform: translateY(-100vh) translateX(150px) scale(2);
-            opacity: 0;
-        }
-    }
-    
     .de-studio {
         font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
-        font-size: 1.1rem;
+        font-weight: 600;
+        font-size: 0.9rem;
         color: #8a63d2;
-        letter-spacing: 0.6em;
+        letter-spacing: 0.5em;
         text-transform: uppercase;
-        margin-bottom: 2rem;
-        opacity: 0;
-        animation: smoothFadeInUp 1.5s ease-out 0.3s forwards;
-        text-shadow: 0 0 25px rgba(138, 99, 210, 0.6);
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 20px rgba(138, 99, 210, 0.5);
     }
     
     .main-title {
         font-family: 'Inter', sans-serif;
-        font-weight: 900;
-        font-size: 5.5rem;
-        background: linear-gradient(135deg, #ffffff 0%, #a78bfa 35%, #8a63d2 65%, #6d28d9 100%);
+        font-weight: 800;
+        font-size: 4.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #a78bfa 40%, #8a63d2 70%, #6d28d9 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         margin: 0;
-        line-height: 1.05;
-        letter-spacing: -0.05em;
-        opacity: 0;
-        animation: smoothFadeInUp 1.5s ease-out 0.7s forwards, titleGlow 5s ease-in-out infinite;
-        position: relative;
-    }
-    
-    @keyframes smoothFadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(50px) scale(0.9);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-    }
-    
-    @keyframes titleGlow {
-        0%, 100% { 
-            filter: brightness(1) drop-shadow(0 0 40px rgba(138, 99, 210, 0.4));
-        }
-        50% { 
-            filter: brightness(1.3) drop-shadow(0 0 70px rgba(138, 99, 210, 0.8));
-        }
+        line-height: 1.1;
+        letter-spacing: -0.04em;
     }
     
     .title-accent {
         font-weight: 300;
-        font-size: 2.2rem;
-        opacity: 0;
-        animation: smoothFadeInUp 1.5s ease-out 1.1s forwards;
+        font-size: 1.8rem;
         display: block;
-        margin-top: 1.5rem;
-        letter-spacing: 0.08em;
+        margin-top: 0.5rem;
+        letter-spacing: 0.05em;
     }
     
     .tagline {
         font-family: 'Inter', sans-serif;
         font-weight: 300;
-        font-size: 1.4rem;
-        color: rgba(255, 255, 255, 0.85);
-        margin-top: 3rem;
-        max-width: 650px;
-        line-height: 1.9;
-        opacity: 0;
-        animation: smoothFadeInUp 1.5s ease-out 1.5s forwards;
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-top: 2rem;
+        max-width: 600px;
+        line-height: 1.7;
     }
     
-    /* Professional glass cards with premium effects */
+    /* Professional cards with optimal sizing */
     .creation-card {
-        background: rgba(15, 15, 20, 0.98);
-        border: 2px solid rgba(255, 255, 255, 0.12);
-        border-radius: 28px;
-        padding: 4rem;
-        margin: 4rem 0;
-        position: relative;
-        overflow: hidden;
-        backdrop-filter: blur(20px);
-        transform: translateY(80px) scale(0.93);
-        opacity: 0;
-        animation: smoothSlideInUp 1.2s ease-out 2s forwards;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .creation-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(138, 99, 210, 0.2), transparent);
-        transition: left 1.2s ease;
-    }
-    
-    .creation-card:hover::before {
-        left: 100%;
+        background: rgba(15, 15, 20, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 2.5rem;
+        margin: 2rem 0;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
     }
     
     .creation-card:hover {
-        transform: translateY(75px) scale(0.95);
-        box-shadow: 0 30px 80px rgba(138, 99, 210, 0.5);
-        border-color: rgba(138, 99, 210, 0.5);
-    }
-    
-    @keyframes smoothSlideInUp {
-        to {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-        }
+        transform: translateY(-5px);
+        box-shadow: 0 15px 50px rgba(138, 99, 210, 0.3);
+        border-color: rgba(138, 99, 210, 0.3);
     }
     
     .card-title {
         font-family: 'Space Grotesk', sans-serif;
-        font-weight: 700;
-        font-size: 1.5rem;
+        font-weight: 600;
+        font-size: 1.2rem;
         color: #8a63d2;
-        margin-bottom: 3rem;
-        letter-spacing: 0.25em;
+        margin-bottom: 2rem;
+        letter-spacing: 0.15em;
         text-transform: uppercase;
         position: relative;
-        opacity: 0;
-        animation: smoothFadeIn 1s ease-out 2.5s forwards;
     }
     
     .card-title::after {
         content: '';
         position: absolute;
-        bottom: -1rem;
+        bottom: -0.5rem;
         left: 0;
-        width: 70px;
-        height: 4px;
+        width: 50px;
+        height: 2px;
         background: linear-gradient(90deg, #8a63d2, transparent);
-        animation: smoothTitleUnderline 3s ease-out;
     }
     
-    @keyframes smoothTitleUnderline {
-        from { width: 0; }
-        to { width: 70px; }
-    }
-    
-    @keyframes smoothFadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
-    }
-    
-    /* Professional inputs with enhanced styling */
+    /* Optimized input fields - professional sizing */
     .stTextInput > div > div > input {
-        background: rgba(255, 255, 255, 0.05) !important;
-        border: 2px solid rgba(255, 255, 255, 0.15) !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
         color: #ffffff !important;
-        border-radius: 20px !important;
+        border-radius: 12px !important;
         font-family: 'Inter', sans-serif !important;
-        font-size: 1.2rem !important;
-        padding: 1.4rem 2rem !important;
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        position: relative;
-        overflow: hidden;
-        backdrop-filter: blur(15px);
+        font-size: 1rem !important;
+        padding: 0.8rem 1.2rem !important;
+        transition: all 0.3s ease !important;
+        backdrop-filter: blur(5px);
     }
     
     .stTextInput > div > div > input:focus {
         border-color: #8a63d2 !important;
-        background: rgba(138, 99, 210, 0.1) !important;
-        box-shadow: 
-            0 0 0 5px rgba(138, 99, 210, 0.3),
-            0 0 30px rgba(138, 99, 210, 0.5) !important;
-        transform: scale(1.04);
-        animation: smoothInputPulse 1s ease-out;
+        background: rgba(138, 99, 210, 0.05) !important;
+        box-shadow: 0 0 0 3px rgba(138, 99, 210, 0.2) !important;
+        transform: scale(1.02);
     }
     
-    @keyframes smoothInputPulse {
-        0% { box-shadow: 0 0 0 0 rgba(138, 99, 210, 0.8); }
-        100% { box-shadow: 0 0 0 40px rgba(138, 99, 210, 0); }
-    }
-    
-    /* Professional buttons with premium effects */
+    /* Optimized buttons - professional and proportional */
     .stButton > button {
         background: linear-gradient(135deg, #8a63d2 0%, #6d28d9 100%) !important;
         color: white !important;
         border: none !important;
-        border-radius: 20px !important;
-        padding: 1.4rem 3rem !important;
+        border-radius: 12px !important;
+        padding: 0.7rem 1.5rem !important;
         font-family: 'Space Grotesk', sans-serif !important;
-        font-weight: 700 !important;
-        font-size: 1.1rem !important;
-        letter-spacing: 0.15em !important;
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        font-weight: 500 !important;
+        font-size: 0.9rem !important;
+        letter-spacing: 0.05em !important;
+        transition: all 0.3s ease !important;
         width: 100%;
         text-transform: uppercase;
         cursor: pointer !important;
-        position: relative;
-        overflow: hidden;
-        transform: translateY(0);
-        box-shadow: 0 8px 25px rgba(138, 99, 210, 0.5);
-    }
-    
-    .stButton > button::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.5);
-        transform: translate(-50%, -50%);
-        transition: width 1s, height 1s;
-    }
-    
-    .stButton > button:active::before {
-        width: 500px;
-        height: 500px;
+        box-shadow: 0 4px 15px rgba(138, 99, 210, 0.3);
     }
     
     .stButton > button:hover {
-        transform: translateY(-5px) !important;
-        box-shadow: 0 20px 50px rgba(138, 99, 210, 0.7) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 25px rgba(138, 99, 210, 0.4) !important;
         background: linear-gradient(135deg, #946be6 0%, #7c3aed 100%) !important;
     }
     
-    /* Professional chat container with ultra-premium styling */
+    /* Professional chat container */
     .chat-container {
-        background: rgba(15, 15, 20, 0.99);
-        border: 3px solid rgba(255, 255, 255, 0.15);
-        border-radius: 32px;
-        padding: 3.5rem;
-        margin-top: 4rem;
-        max-height: 700px;
-        overflow-y: auto;
-        box-shadow: 
-            inset 0 3px 0 rgba(255, 255, 255, 0.08),
-            0 30px 80px rgba(0, 0, 0, 0.9);
-        position: relative;
-        animation: smoothChatContainerFadeIn 1.5s ease-out;
-        backdrop-filter: blur(25px);
-    }
-    
-    @keyframes smoothChatContainerFadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.9) translateY(40px);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-    }
-    
-    /* Professional messages with ultra-smooth animations */
-    .message {
-        margin-bottom: 2.5rem;
+        background: rgba(15, 15, 20, 0.95);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
         padding: 2rem;
-        background: rgba(255, 255, 255, 0.04);
-        border-radius: 24px;
-        border-left: 6px solid #8a63d2;
-        position: relative;
-        overflow: hidden;
-        animation: smoothMessageSlideIn 1s cubic-bezier(0.4, 0, 0.2, 1);
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        backdrop-filter: blur(15px);
+        margin-top: 2rem;
+        max-height: 600px;
+        overflow-y: auto;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(10px);
     }
     
-    .message::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(138, 99, 210, 0.25), transparent);
-        animation: smoothMessageShine 4s infinite;
-    }
-    
-    @keyframes smoothMessageShine {
-        0% { left: -100%; }
-        100% { left: 100%; }
-    }
-    
-    @keyframes smoothMessageSlideIn {
-        from {
-            opacity: 0;
-            transform: translateX(-80px) scale(0.92);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0) scale(1);
-        }
+    /* Professional messages */
+    .message {
+        margin-bottom: 1.5rem;
+        padding: 1.2rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        border-left: 4px solid #8a63d2;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(5px);
     }
     
     .message:hover {
-        background: rgba(255, 255, 255, 0.06);
-        transform: translateX(15px) scale(1.03);
-        box-shadow: 0 10px 40px rgba(138, 99, 210, 0.4);
+        background: rgba(255, 255, 255, 0.05);
+        transform: translateX(5px);
+        box-shadow: 0 5px 20px rgba(138, 99, 210, 0.2);
     }
     
-    /* Professional status indicators with ultra-smooth pulse */
+    /* Professional status indicators */
     .status-indicator {
         display: inline-flex;
         align-items: center;
-        gap: 1.2rem;
-        padding: 1.2rem 2.5rem;
-        background: rgba(138, 99, 210, 0.2);
-        border-radius: 35px;
-        font-size: 1.1rem;
+        gap: 0.8rem;
+        padding: 0.6rem 1.2rem;
+        background: rgba(138, 99, 210, 0.1);
+        border-radius: 20px;
+        font-size: 0.85rem;
         color: #8a63d2;
-        margin-bottom: 3rem;
-        border: 3px solid rgba(138, 99, 210, 0.4);
-        animation: smoothStatusPulse 5s ease-in-out infinite;
-        backdrop-filter: blur(15px);
-    }
-    
-    @keyframes smoothStatusPulse {
-        0%, 100% { 
-            box-shadow: 0 0 0 0 rgba(138, 99, 210, 0.6);
-            transform: scale(1);
-        }
-        50% { 
-            box-shadow: 0 0 0 20px rgba(138, 99, 210, 0);
-            transform: scale(1.1);
-        }
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(138, 99, 210, 0.2);
+        backdrop-filter: blur(5px);
     }
     
     .status-dot {
-        width: 16px;
-        height: 16px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
         background: #10b981;
-        animation: smoothDotPulse 4s infinite;
-        box-shadow: 0 0 25px rgba(16, 185, 129, 1);
+        animation: pulse 2s infinite;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
     }
     
-    @keyframes smoothDotPulse {
-        0%, 100% { 
-            transform: scale(1);
-            opacity: 1;
-        }
-        50% { 
-            transform: scale(1.5);
-            opacity: 0.9;
-        }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
     }
     
-    /* Professional custom scrollbar */
+    /* Custom scrollbar */
     ::-webkit-scrollbar {
-        width: 14px;
+        width: 8px;
     }
     
     ::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.04);
-        border-radius: 7px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 4px;
     }
     
     ::-webkit-scrollbar-thumb {
         background: linear-gradient(135deg, #8a63d2, #6d28d9);
-        border-radius: 7px;
-        transition: all 0.3s ease;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #a78bfa, #8a63d2);
-        transform: scaleX(1.4);
+        border-radius: 4px;
     }
     
     /* Hide Streamlit elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    
-    /* Professional loading animation */
-    .loading-dots {
-        display: inline-block;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-    
-    .loading-dots::after {
-        content: '';
-        animation: smoothLoadingDots 2.5s infinite;
-    }
-    
-    @keyframes smoothLoadingDots {
-        0%, 20% { content: '.'; }
-        40% { content: '..'; }
-        60%, 100% { content: '...'; }
-    }
     </style>
-    """, unsafe_allow_html=True)
-
-def render_smooth_header():
-    st.markdown("""
-    <div class="hero-container">
-        <div class="particles" id="particles"></div>
-        <div class="de-studio">DE STUDIO</div>
-        <h1 class="main-title">DARKRELAY<br><span class="title-accent">Anonymous Encrypted Platform</span></h1>
-        <div class="tagline">
-            Complete anonymity. Military-grade encryption. Zero compromise.
-        </div>
-    </div>
-    
-    <script>
-        // Create floating particles
-        document.addEventListener('DOMContentLoaded', function() {
-            const particlesContainer = document.getElementById('particles');
-            if (particlesContainer) {
-                for (let i = 0; i < 40; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'particle';
-                    particle.style.left = Math.random() * 100 + '%';
-                    particle.style.animationDelay = Math.random() * 25 + 's';
-                    particle.style.animationDuration = (25 + Math.random() * 15) + 's';
-                    particle.style.width = (Math.random() * 8 + 3) + 'px';
-                    particle.style.height = particle.style.width;
-                    particle.style.background = `rgba(${138 + Math.random() * 30}, ${99 + Math.random() * 30}, ${210 + Math.random() * 30}, ${Math.random() * 0.6 + 0.4})`;
-                    particlesContainer.appendChild(particle);
-                }
-            }
-        });
-    </script>
     """, unsafe_allow_html=True)
 
 # ====================
@@ -851,10 +600,10 @@ def generate_room_id(name: str) -> str:
     return f"{clean_name}-{unique_part}"
 
 # ====================
-# ENHANCED ACTIVE USERS SIDEBAR WITH THEME SUPPORT
+# FIXED ACTIVE USERS SIDEBAR
 # ====================
 def display_active_users_sidebar(room_id: str):
-    """Display active users in the current room with theme support"""
+    """Display active users in the current room - FIXED VERSION"""
     if not room_id:
         return
     
@@ -872,19 +621,6 @@ def display_active_users_sidebar(room_id: str):
         # Get active users
         active_users = global_state.get_active_users(room_id)
         
-        # Theme selector for current channel
-        current_theme = global_state.get_channel_theme(room_id)
-        new_theme = st.selectbox(
-            "🎨 Channel Theme", 
-            ["Cinematic Dark", "Neon Purple", "Matrix Green", "Ocean Blue", "Sunset Orange", "Cyber Pink"],
-            index=["Cinematic Dark", "Neon Purple", "Matrix Green", "Ocean Blue", "Sunset Orange", "Cyber Pink"].index(current_theme),
-            help="Change the visual theme for this channel"
-        )
-        
-        if new_theme != current_theme:
-            global_state.set_channel_theme(room_id, new_theme)
-            st.rerun()
-        
         if active_users:
             st.markdown(f"**{len(active_users)}** users online")
             
@@ -893,23 +629,16 @@ def display_active_users_sidebar(room_id: str):
                 user_display = "👤 You" if is_current_user else f"👤 User_{user_id[-6:]}"
                 status_color = "#10b981" if is_current_user else "#8a63d2"
                 
-                # Add online indicator
-                online_status = "🟢" if is_current_user else "🟠"
-                
                 st.markdown(f"""
                 <div style="
-                    padding: 0.8rem 1.2rem; 
-                    margin: 0.3rem 0; 
+                    padding: 0.6rem 1rem; 
+                    margin: 0.25rem 0; 
                     background: rgba({status_color}, 0.1); 
-                    border-radius: 12px; 
-                    border-left: 4px solid {status_color};
-                    font-size: 0.95rem;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.background='rgba({status_color}, 0.2)'" onmouseout="this.style.background='rgba({status_color}, 0.1)'">
-                    {online_status} {user_display}
+                    border-radius: 8px; 
+                    border-left: 3px solid {status_color};
+                    font-size: 0.9rem;
+                ">
+                    {user_display}
                 </div>
                 """, unsafe_allow_html=True)
         else:
@@ -926,7 +655,7 @@ def display_active_users_sidebar(room_id: str):
                         st.rerun()
 
 # ====================
-# PROFESSIONAL UI COMPONENTS
+# PROFESSIONAL UI COMPONENTS WITH OPTIMIZED SIZING
 # ====================
 def create_room_section():
     with st.container():
@@ -1003,13 +732,6 @@ def chat_interface():
         st.rerun()
         return
     
-    # Apply dynamic background theme
-    current_theme = global_state.get_channel_theme(st.session_state.current_room)
-    inject_dynamic_background(current_theme, st.session_state.current_room)
-    
-    # Show enhanced active users sidebar
-    display_active_users_sidebar(st.session_state.current_room)
-    
     # Create placeholder for ultra-fast auto-updating content
     chat_placeholder = st.empty()
     
@@ -1039,11 +761,11 @@ def chat_interface():
             st.session_state.current_room = None
             st.rerun()
     
-    # Enhanced status indicator with theme color
-    st.markdown(f"""
+    # Enhanced status indicator
+    st.markdown("""
     <div class="status-indicator">
         <div class="status-dot"></div>
-        🔒 ENCRYPTED • LIVE • ANONYMOUS • {current_theme.upper()}
+        🔒 ENCRYPTED • LIVE • ANONYMOUS • 0.5s UPDATES
     </div>
     """, unsafe_allow_html=True)
     
@@ -1095,7 +817,7 @@ def chat_interface():
                     </div>
                     <div class="message-content">{decrypted}</div>
                     <div class="message-meta">
-                        {chain_status} • Hash: {msg.get('hash', 'N/A')[:8]}... • Theme: {current_theme}
+                        {chain_status} • Hash: {msg.get('hash', 'N/A')[:8]}...
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -1104,7 +826,7 @@ def chat_interface():
                 st.markdown(f"""
                 <div class="message">
                     <div class="message-content" style="color: rgba(255, 255, 255, 0.5); font-style: italic;">
-                        [🔒 Encrypted message - Theme: {current_theme}]
+                        [🔒 Encrypted message]
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -1175,15 +897,13 @@ def main():
         initial_sidebar_state="expanded"
     )
     
-    inject_smooth_animations()
+    inject_professional_styles()
     render_smooth_header()
     initialize_session()
     
-    # Apply default theme if in room
+    # Show enhanced active users sidebar when in a room
     if st.session_state.current_room:
-        global_state = get_global_state()
-        current_theme = global_state.get_channel_theme(st.session_state.current_room)
-        inject_dynamic_background(current_theme, st.session_state.current_room)
+        display_active_users_sidebar(st.session_state.current_room)
     
     # Main content area
     main_area = st.container()
