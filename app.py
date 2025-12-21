@@ -748,7 +748,7 @@ def join_room_section():
                     else:
                         st.error("❌ Channel not found")
         
-        st.markdown('</div>', unsafe_add_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
 
 # ====================
 # IMPROVED CHAT INTERFACE WITH BETTER AUTO-UPDATE
