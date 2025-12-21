@@ -215,104 +215,6 @@ class EncryptionHandler:
         return hashlib.sha256(data.encode()).hexdigest()
 
 # ====================
-# DYNAMIC BACKGROUND THEMES
-# ====================
-def get_channel_background_css(theme_name: str, room_id: str) -> str:
-    """Generate dynamic CSS based on channel theme"""
-    
-    themes = {
-        "Cinematic Dark": f"""
-        .stApp {{
-            background: #000000 !important;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(138, 99, 210, 0.15) 0%, transparent 60%),
-                radial-gradient(circle at 80% 70%, rgba(40, 10, 80, 0.1) 0%, transparent 60%);
-        }}
-        """,
-        
-        "Neon Purple": f"""
-        .stApp {{
-            background: #0a0a0a !important;
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.3) 0%, transparent 70%),
-                linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, transparent 100%);
-        }}
-        .main-title {{ 
-            background: linear-gradient(135deg, #a855f7 0%, #d946ef 100%) !important; 
-        }}
-        .status-indicator {{ color: #a855f7; border-color: #a855f7; }}
-        .status-dot {{ background: #a855f7; }}
-        """,
-        
-        "Matrix Green": f"""
-        .stApp {{ 
-            background: #000000 !important; 
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(0, 255, 0, 0.2) 0%, transparent 70%),
-                linear-gradient(180deg, rgba(0, 255, 0, 0.05) 0%, transparent 100%);
-        }}
-        .main-title {{ 
-            background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%) !important; 
-        }}
-        .status-indicator {{ color: #00ff00; border-color: #00ff00; }}
-        .status-dot {{ background: #00ff00; }}
-        .message {{ border-left-color: #00ff00 !important; }}
-        """,
-        
-        "Ocean Blue": f"""
-        .stApp {{
-            background: #001122 !important;
-            background-image: 
-                radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.2) 0%, transparent 60%),
-                radial-gradient(circle at 70% 80%, rgba(29, 78, 216, 0.15) 0%, transparent 60%);
-        }}
-        .main-title {{ 
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important; 
-        }}
-        .status-indicator {{ color: #3b82f6; border-color: #3b82f6; }}
-        .status-dot {{ background: #3b82f6; }}
-        .message {{ border-left-color: #3b82f6 !important; }}
-        """,
-        
-        "Sunset Orange": f"""
-        .stApp {{
-            background: #1a0a00 !important;
-            background-image: 
-                radial-gradient(circle at 40% 30%, rgba(251, 146, 60, 0.2) 0%, transparent 60%),
-                radial-gradient(circle at 60% 70%, rgba(234, 88, 12, 0.15) 0%, transparent 60%);
-        }}
-        .main-title {{ 
-            background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%) !important; 
-        }}
-        .status-indicator {{ color: #fb923c; border-color: #fb923c; }}
-        .status-dot {{ background: #fb923c; }}
-        .message {{ border-left-color: #fb923c !important; }}
-        """,
-        
-        "Cyber Pink": f"""
-        .stApp {{
-            background: #160020 !important;
-            background-image: 
-                radial-gradient(circle at 25% 25%, rgba(236, 72, 153, 0.25) 0%, transparent 60%),
-                radial-gradient(circle at 75% 75%, rgba(190, 24, 93, 0.2) 0%, transparent 60%);
-        }}
-        .main-title {{ 
-            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%) !important; 
-        }}
-        .status-indicator {{ color: #ec4899; border-color: #ec4899; }}
-        .status-dot {{ background: #ec4899; }}
-        .message {{ border-left-color: #ec4899 !important; }}
-        """
-    }
-    
-    return themes.get(theme_name, themes["Cinematic Dark"])
-
-def inject_dynamic_background(theme_name: str, room_id: str):
-    """Inject dynamic background CSS based on channel theme"""
-    css = get_channel_background_css(theme_name, room_id)
-    st.markdown(f"<style>{css}</style>", unsafe_allow_html=True)
-
-# ====================
 # PROFESSIONAL STYLING WITH OPTIMIZED SIZING
 # ====================
 def inject_professional_styles():
@@ -545,6 +447,17 @@ def inject_professional_styles():
     </style>
     """, unsafe_allow_html=True)
 
+def render_header():
+    st.markdown("""
+    <div class="hero-container">
+        <div class="de-studio">DE STUDIO</div>
+        <h1 class="main-title">DARKRELAY<br><span class="title-accent">Anonymous Encrypted Platform</span></h1>
+        <div class="tagline">
+            Complete anonymity. Military-grade encryption. Zero compromise.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 # ====================
 # ULTRA-FAST AUTO-UPDATE MECHANISM (0.5 SECONDS)
 # ====================
@@ -693,7 +606,7 @@ def create_room_section():
 def join_room_section():
     with st.container():
         st.markdown('<div class="creation-card">', unsafe_allow_html=True)
-        st.markdown('<div class="card-title">🔗 JOIN CHANNEL</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-title">🔗 JOIN CHANNEL</div>', unsafe_for_html=True)
         
         join_id = st.text_input(
             "Channel ID",
@@ -898,7 +811,7 @@ def main():
     )
     
     inject_professional_styles()
-    render_smooth_header()
+    render_header()
     initialize_session()
     
     # Show enhanced active users sidebar when in a room
