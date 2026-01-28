@@ -1,6 +1,7 @@
 import streamlit as st
 import hashlib
 import time
+import random
 from datetime import datetime
 from cryptography.fernet import Fernet
 import threading
@@ -180,108 +181,149 @@ def sanitize_message(message: str) -> str:
     return message.strip()
 
 # ====================
-# PROFESSIONAL STYLING WITH SMOOTH ANIMATIONS
+# COMPLETE STYLING SYSTEM WITH ADVANCED ANIMATIONS
 # ====================
 def inject_professional_styles():
     st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    /* Animated noise overlay */
-    @keyframes noise {
-        0%, 100% { opacity: 0.03; }
-        50% { opacity: 0.06; }
+    <style>
+    /* Core background - solid black base to prevent flash */
+    .stApp {
+        background-color: #000000 !important;
+        background: linear-gradient(180deg, #050508 0%, #0a0a0f 50%, #000000 100%) !important;
+        background-attachment: fixed !important;
+        position: relative;
+        overflow-x: hidden;
     }
     
-    .stApp::before {
-        content: '';
+    /* Floating particles animation */
+    @keyframes floatUp {
+        0% {
+            transform: translateY(100vh) translateX(0) scale(0);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.5;
+        }
+        90% {
+            opacity: 0.5;
+        }
+        100% {
+            transform: translateY(-10vh) translateX(100px) scale(1);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes floatSide {
+        0%, 100% { transform: translateX(0px); }
+        50% { transform: translateX(20px); }
+    }
+    
+    @keyframes glowPulse {
+        0%, 100% {
+            box-shadow: 0 0 5px rgba(138, 99, 210, 0.5),
+                        0 0 10px rgba(138, 99, 210, 0.3),
+                        0 0 15px rgba(138, 99, 210, 0.2);
+        }
+        50% {
+            box-shadow: 0 0 20px rgba(138, 99, 210, 0.8),
+                        0 0 30px rgba(138, 99, 210, 0.5),
+                        0 0 40px rgba(138, 99, 210, 0.3);
+        }
+    }
+    
+    @keyframes neonFlicker {
+        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+            text-shadow: 
+                0 0 10px rgba(138, 99, 210, 0.8),
+                0 0 20px rgba(138, 99, 210, 0.6),
+                0 0 30px rgba(138, 99, 210, 0.4);
+            opacity: 1;
+        }
+        20%, 24%, 55% {
+            text-shadow: none;
+            opacity: 0.8;
+        }
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translate3d(0, 40px, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+    
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+    
+    @keyframes borderRotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes typingBounce {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-10px); }
+    }
+    
+    /* Particle container */
+    .particles {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-        opacity: 0.03;
         pointer-events: none;
-        animation: noise 8s infinite;
         z-index: 1;
+        overflow: hidden;
     }
     
-    .stApp {
-        background: linear-gradient(180deg, #000000 0%, #0a0a0f 50%, #000000 100%) !important;
-        background-size: 100% 200%;
-        animation: gradientShift 20s ease infinite;
-        position: relative;
+    .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: rgba(138, 99, 210, 0.6);
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(138, 99, 210, 0.8);
+        animation: floatUp linear infinite;
     }
     
-    @keyframes gradientShift {
-        0%, 100% { background-position: 0% 0%; }
-        50% { background-position: 0% 100%; }
-    }
-    
+    /* Main content wrapper */
     .main {
         background: transparent !important;
         position: relative;
-        z-index: 2;
+        z-index: 10;
     }
     
-    /* Neon pulse animation */
-    @keyframes neonPulse {
-        0%, 100% {
-            text-shadow: 0 0 20px rgba(138, 99, 210, 0.5),
-                         0 0 40px rgba(138, 99, 210, 0.3),
-                         0 0 60px rgba(138, 99, 210, 0.2);
-        }
-        50% {
-            text-shadow: 0 0 30px rgba(138, 99, 210, 0.8),
-                         0 0 60px rgba(138, 99, 210, 0.5),
-                         0 0 90px rgba(138, 99, 210, 0.3);
-        }
+    block-container {
+        padding-top: 2rem !important;
     }
     
-    /* Message entrance animation */
-    @keyframes messageEnter {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    /* Typing dots animation */
-    @keyframes typingDots {
-        0%, 20% { content: '.'; }
-        40% { content: '..'; }
-        60%, 100% { content: '...'; }
-    }
-    
-    /* Verification icon pulse */
-    @keyframes verifyPulse {
-        0%, 100% { transform: scale(1); opacity: 1; }
-        50% { transform: scale(1.1); opacity: 0.8; }
-    }
-    
-    /* Button glow animation */
-    @keyframes buttonGlow {
-        0%, 100% {
-            box-shadow: 0 4px 15px rgba(138, 99, 210, 0.3),
-                        0 0 20px rgba(138, 99, 210, 0.2);
-        }
-        50% {
-            box-shadow: 0 4px 20px rgba(138, 99, 210, 0.5),
-                        0 0 40px rgba(138, 99, 210, 0.3);
-        }
-    }
-    
+    /* Hero section with entrance animation */
     .hero-container {
         text-align: left;
         padding: 3rem 0 4rem 0;
         position: relative;
-        overflow: hidden;
         border-bottom: 1px solid rgba(138, 99, 210, 0.2);
+        animation: slideInUp 0.8s ease-out;
     }
     
     .de-studio {
@@ -292,7 +334,8 @@ def inject_professional_styles():
         letter-spacing: 0.5em;
         text-transform: uppercase;
         margin-bottom: 1.5rem;
-        animation: neonPulse 3s ease-in-out infinite;
+        animation: neonFlicker 3s infinite alternate;
+        display: inline-block;
     }
     
     .main-title {
@@ -306,6 +349,7 @@ def inject_professional_styles():
         margin: 0;
         line-height: 1.1;
         letter-spacing: -0.04em;
+        animation: fadeInScale 0.8s ease-out 0.2s both;
     }
     
     .title-accent {
@@ -314,6 +358,7 @@ def inject_professional_styles():
         display: block;
         margin-top: 0.5rem;
         letter-spacing: 0.05em;
+        opacity: 0.9;
     }
     
     .tagline {
@@ -324,21 +369,45 @@ def inject_professional_styles():
         margin-top: 1.5rem;
         max-width: 600px;
         line-height: 1.7;
+        animation: slideInUp 0.8s ease-out 0.4s both;
     }
     
+    /* Creation cards with hover effects */
     .creation-card {
-        background: rgba(15, 15, 20, 0.95);
+        background: rgba(15, 15, 20, 0.9);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 20px;
         padding: 2rem;
         margin: 2rem 0;
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(20px);
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeInScale 0.6s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .creation-card::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #8a63d2, transparent, #8a63d2);
+        border-radius: 20px;
+        opacity: 0;
+        z-index: -1;
+        transition: opacity 0.3s;
+    }
+    
+    .creation-card:hover::before {
+        opacity: 0.5;
+        animation: borderRotate 3s linear infinite;
     }
     
     .creation-card:hover {
-        transform: translateY(-5px);
+        transform: translateY(-5px) scale(1.02);
         box-shadow: 0 15px 50px rgba(138, 99, 210, 0.3);
         border-color: rgba(138, 99, 210, 0.3);
     }
@@ -352,6 +421,7 @@ def inject_professional_styles():
         letter-spacing: 0.15em;
         text-transform: uppercase;
         position: relative;
+        display: inline-block;
     }
     
     .card-title::after {
@@ -362,26 +432,31 @@ def inject_professional_styles():
         width: 50px;
         height: 2px;
         background: linear-gradient(90deg, #8a63d2, transparent);
+        animation: shimmer 2s infinite;
+        background-size: 200% 100%;
     }
     
+    /* Input styling */
     .stTextInput > div > div > input {
-        background: rgba(255, 255, 255, 0.03) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
         color: #ffffff !important;
         border-radius: 12px !important;
         font-family: 'Inter', sans-serif !important;
         font-size: 0.95rem !important;
         padding: 0.75rem 1rem !important;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        backdrop-filter: blur(5px);
+        backdrop-filter: blur(10px);
     }
     
     .stTextInput > div > div > input:focus {
         border-color: #8a63d2 !important;
-        background: rgba(138, 99, 210, 0.05) !important;
-        box-shadow: 0 0 0 3px rgba(138, 99, 210, 0.2) !important;
+        background: rgba(138, 99, 210, 0.08) !important;
+        box-shadow: 0 0 0 4px rgba(138, 99, 210, 0.2) !important;
+        animation: glowPulse 2s infinite;
     }
     
+    /* Button animations */
     .stButton > button {
         background: linear-gradient(135deg, #8a63d2 0%, #6d28d9 100%) !important;
         color: white !important;
@@ -396,18 +471,41 @@ def inject_professional_styles():
         width: 100%;
         text-transform: uppercase;
         cursor: pointer !important;
-        animation: buttonGlow 3s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInScale 0.5s ease-out;
+    }
+    
+    .stButton > button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .stButton > button:hover::before {
+        width: 300px;
+        height: 300px;
     }
     
     .stButton > button:hover {
-        transform: translateY(-2px) !important;
-        background: linear-gradient(135deg, #946be6 0%, #7c3aed 100%) !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 10px 30px rgba(138, 99, 210, 0.5) !important;
+        letter-spacing: 0.1em !important;
     }
     
     .stButton > button:active {
-        transform: translateY(0) !important;
+        transform: translateY(-1px) !important;
+        transition: all 0.1s !important;
     }
     
+    /* Chat container with animations */
     .chat-container {
         background: rgba(15, 15, 20, 0.95);
         border: 1px solid rgba(255, 255, 255, 0.08);
@@ -417,11 +515,13 @@ def inject_professional_styles():
         margin-bottom: 1rem;
         max-height: 450px;
         overflow-y: auto;
-        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(10px);
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
         scroll-behavior: smooth;
+        animation: fadeInScale 0.6s ease-out;
     }
     
+    /* Message styling */
     .message {
         margin-bottom: 1.2rem;
         padding: 1rem;
@@ -429,13 +529,31 @@ def inject_professional_styles():
         border-radius: 16px;
         border-left: 4px solid #8a63d2;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        backdrop-filter: blur(5px);
-        animation: messageEnter 0.4s ease-out;
+        backdrop-filter: blur(10px);
+        animation: slideInUp 0.4s ease-out;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .message::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(138, 99, 210, 0.1), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.5s;
+    }
+    
+    .message:hover::after {
+        transform: translateX(100%);
     }
     
     .message:hover {
-        background: rgba(255, 255, 255, 0.05);
-        transform: translateX(5px);
+        background: rgba(255, 255, 255, 0.06);
+        transform: translateX(8px);
         box-shadow: 0 5px 20px rgba(138, 99, 210, 0.2);
     }
     
@@ -450,21 +568,25 @@ def inject_professional_styles():
     
     .message-user {
         color: #8a63d2;
-        font-weight: 500;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
     .message-time {
         color: rgba(255, 255, 255, 0.5);
         font-size: 0.7rem;
+        font-family: 'Inter', sans-serif;
     }
     
     .message-content {
-        color: rgba(255, 255, 255, 0.9);
+        color: rgba(255, 255, 255, 0.95);
         font-family: 'Inter', sans-serif;
         line-height: 1.6;
         margin-bottom: 0.7rem;
         word-wrap: break-word;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
     }
     
     .message-meta {
@@ -473,25 +595,30 @@ def inject_professional_styles():
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        font-family: 'Space Grotesk', sans-serif;
     }
     
     .verify-icon {
         display: inline-block;
-        animation: verifyPulse 2s ease-in-out infinite;
+        animation: glowPulse 2s ease-in-out infinite;
     }
     
+    /* Status indicators */
     .status-indicator {
         display: inline-flex;
         align-items: center;
         gap: 0.8rem;
-        padding: 0.5rem 1rem;
+        padding: 0.6rem 1.2rem;
         background: rgba(138, 99, 210, 0.1);
-        border-radius: 20px;
+        border-radius: 25px;
         font-size: 0.8rem;
         color: #8a63d2;
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
         border: 1px solid rgba(138, 99, 210, 0.2);
         backdrop-filter: blur(5px);
+        animation: fadeInScale 0.5s ease-out;
+        font-family: 'Space Grotesk', sans-serif;
+        letter-spacing: 0.05em;
     }
     
     .status-dot {
@@ -499,37 +626,42 @@ def inject_professional_styles():
         height: 8px;
         border-radius: 50%;
         background: #10b981;
-        animation: pulse 2s infinite;
-        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
+        animation: glowPulse 2s infinite;
     }
     
-    @keyframes pulse {
-        0%, 100% { opacity: 1; transform: scale(1); }
-        50% { opacity: 0.5; transform: scale(0.9); }
+    /* Typing indicator */
+    .typing-indicator {
+        display: flex;
+        gap: 6px;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        width: fit-content;
+        margin: 1rem 0;
     }
     
-    .active-header {
-        animation: neonPulse 3s ease-in-out infinite;
+    .typing-dot {
+        width: 8px;
+        height: 8px;
+        background: #8a63d2;
+        border-radius: 50%;
+        animation: typingBounce 1.4s infinite;
     }
     
-    .message-input-container {
-        position: sticky;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.95);
-        padding: 1rem 0;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        z-index: 10;
-        margin-top: 1rem;
-    }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
     
+    /* Room header */
     .room-header {
         background: rgba(15, 15, 20, 0.95);
         border: 1px solid rgba(138, 99, 210, 0.3);
         border-radius: 16px;
         padding: 1.2rem;
         margin-bottom: 1rem;
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(20px);
+        animation: slideInUp 0.5s ease-out;
+        box-shadow: 0 10px 30px rgba(138, 99, 210, 0.1);
     }
     
     .room-info {
@@ -547,26 +679,58 @@ def inject_professional_styles():
         color: #8a63d2;
         font-weight: 400;
         margin-left: 0.5rem;
+        background: rgba(138, 99, 210, 0.1);
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
+        border: 1px solid rgba(138, 99, 210, 0.2);
     }
     
     .user-count {
         font-size: 0.8rem;
         color: rgba(255, 255, 255, 0.6);
         margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
     
-    ::-webkit-scrollbar {
+    .user-count::before {
+        content: '';
         width: 6px;
+        height: 6px;
+        background: #10b981;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    
+    /* Message input area */
+    .message-input-container {
+        position: sticky;
+        bottom: 0;
+        background: rgba(5, 5, 8, 0.98);
+        padding: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(20px);
+        z-index: 100;
+        margin-top: 1rem;
+        border-radius: 16px;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 8px;
     }
     
     ::-webkit-scrollbar-track {
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.02);
         border-radius: 4px;
     }
     
     ::-webkit-scrollbar-thumb {
         background: linear-gradient(135deg, #8a63d2, #6d28d9);
         border-radius: 4px;
+        border: 2px solid rgba(15, 15, 20, 0.95);
     }
     
     ::-webkit-scrollbar-thumb:hover {
@@ -596,10 +760,54 @@ def inject_professional_styles():
         }
     }
     
+    /* Hide Streamlit elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    .stDeployButton {display: none;}
+    
+    /* Success/Error message animations */
+    .stAlert {
+        animation: slideInUp 0.4s ease-out;
+        border-radius: 12px !important;
+        backdrop-filter: blur(10px) !important;
+    }
+    
+    /* Expanding effect for new messages */
+    @keyframes highlightNew {
+        0% {
+            background: rgba(138, 99, 210, 0.3);
+            transform: scale(1.02);
+        }
+        100% {
+            background: rgba(255, 255, 255, 0.03);
+            transform: scale(1);
+        }
+    }
+    
+    .new-message {
+        animation: highlightNew 1s ease-out;
+    }
     </style>
+    
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+    
+    <script>
+        // Generate floating particles
+        const particleContainer = document.getElementById('particles');
+        const particleCount = 20;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particle.style.animationDelay = Math.random() * 10 + 's';
+            particle.style.opacity = Math.random() * 0.5;
+            particleContainer.appendChild(particle);
+        }
+    </script>
     """, unsafe_allow_html=True)
 
 def render_header():
@@ -608,7 +816,8 @@ def render_header():
         <div class="de-studio">DE STUDIO</div>
         <h1 class="main-title">DARKRELAY<br><span class="title-accent">Anonymous Encrypted Platform</span></h1>
         <div class="tagline">
-            Complete anonymity. Military-grade encryption. Zero compromise.
+            Complete anonymity. Military-grade encryption. Zero compromise. 
+            <span style="color: #8a63d2; font-weight: 500;">Ephemeral by design.</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -661,6 +870,8 @@ def initialize_session():
         st.session_state.auto_updater = OptimizedAutoUpdater()
     if 'message_key' not in st.session_state:
         st.session_state.message_key = 0
+    if 'page_refresh' not in st.session_state:
+        st.session_state.page_refresh = 0
 
 def generate_room_id(name: str) -> str:
     clean_name = re.sub(r'[^a-zA-Z0-9]', '', name)[:4].upper()
@@ -674,7 +885,7 @@ def generate_room_id(name: str) -> str:
 # ====================
 def create_room_section():
     with st.container():
-        st.markdown('<div class="creation-card">', unsafe_allow_html=True)
+        st.markdown('<div class="creation-card">', unsafe_for_html=True)
         st.markdown('<div class="card-title">🔐 CREATE SECURE CHANNEL</div>', unsafe_allow_html=True)
         
         col1, col2 = st.columns([3, 1])
@@ -706,7 +917,7 @@ def create_room_section():
 
 def join_room_section():
     with st.container():
-        st.markdown('<div class="creation-card">', unsafe_allow_html=True)
+        st.markdown('<div class="creation-card">', unsafe_for_html=True)
         st.markdown('<div class="card-title">🔗 JOIN CHANNEL</div>', unsafe_allow_html=True)
         
         join_id = st.text_input(
@@ -725,9 +936,9 @@ def join_room_section():
                     st.session_state.room_name = room_data.get("name", "Unknown")
                     st.rerun()
                 else:
-                    st.error("❌ Channel not found")
+                    st.error("❌ Channel not found or expired")
         
-        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_for_html=True)
 
 # ====================
 # OPTIMIZED CHAT INTERFACE
@@ -740,15 +951,16 @@ def chat_interface():
         global_state = get_global_state()
         room_data = global_state.get_room(st.session_state.current_room)
         if not room_data:
-            st.error("❌ Channel not found")
+            st.error("❌ Channel not found or expired")
             st.session_state.current_room = None
+            time.sleep(0.5)
             st.rerun()
             return
         
         # Update user activity
         global_state.update_user_activity(st.session_state.current_room, st.session_state.user_id)
         
-        # Cleanup inactive users and expired rooms
+        # Cleanup inactive users and expired rooms periodically
         global_state.cleanup_inactive_users(st.session_state.current_room)
         global_state.cleanup_expired_rooms()
         
@@ -756,17 +968,17 @@ def chat_interface():
         if st.session_state.auto_updater.should_update(st.session_state.current_room):
             st.rerun()
         
-        # Chat header
+        # Chat header with room info
         col1, col2 = st.columns([3, 1])
         with col1:
             active_count = global_state.get_active_users_count(st.session_state.current_room)
             st.markdown(f"""
-            <div class="room-header active-header">
+            <div class="room-header">
                 <div class="room-info">
                     🔒 {room_data.get('name', 'Unknown')}
                     <span class="room-id">{st.session_state.current_room}</span>
                 </div>
-                <div class="user-count">👥 {active_count} active</div>
+                <div class="user-count">{active_count} active user{'s' if active_count != 1 else ''}</div>
             </div>
             """, unsafe_allow_html=True)
         
@@ -799,17 +1011,20 @@ def chat_interface():
         if not messages:
             st.markdown("""
             <div class="message">
-                <div class="message-content" style="text-align: center; color: rgba(255, 255, 255, 0.6); font-style: italic;">
+                <div class="message-content" style="text-align: center; color: rgba(255, 255, 255, 0.6); font-style: italic; padding: 2rem 0;">
                     🔓 No messages yet. Start the encrypted conversation...
+                    <div style="margin-top: 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.4);">
+                        Messages auto-delete after 30 minutes of inactivity
+                    </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
         
-        # Display last 50 messages
+        # Display last 50 messages with chain verification
         for i, msg in enumerate(messages[-50:]):
             try:
                 decrypted = encryptor.decrypt(msg["encrypted_message"])
-                msg_time = datetime.fromtimestamp(msg["timestamp"]).strftime("%H:%M:%S")
+                msg_time = datetime.fromtimestamp(msg["timestamp"]).strftime("%H:%M")
                 
                 # Chain verification
                 chain_valid = True
@@ -817,30 +1032,32 @@ def chat_interface():
                     prev_msg = messages[-50:][i-1]
                     chain_valid = msg.get("previous_hash", "") == prev_msg.get("hash", "")
                 
-                verify_icon = '<span class="verify-icon">✅</span>' if chain_valid else '❌'
-                user_short = msg.get('user_id', 'unknown')[-6:]
+                verify_icon = '<span class="verify-icon">✓</span>' if chain_valid else '⚠'
+                user_short = msg.get('user_id', 'unknown')[-4:]
                 is_current_user = msg.get('user_id') == st.session_state.user_id
                 
-                message_style = "border-left-color: #10b981;" if is_current_user else "border-left-color: #8a63d2;"
+                # Different styling for own messages
+                border_color = "#10b981" if is_current_user else "#8a63d2"
+                user_label = "👤 You" if is_current_user else f"👤 User_{user_short}"
                 
                 st.markdown(f"""
-                <div class="message" style="{message_style}">
+                <div class="message" style="border-left-color: {border_color};">
                     <div class="message-header">
-                        <span class="message-user">{'👤 You' if is_current_user else f'👤 User_{user_short}'}</span>
+                        <span class="message-user">{user_label}</span>
                         <span class="message-time">{msg_time}</span>
                     </div>
                     <div class="message-content">{decrypted}</div>
                     <div class="message-meta">
-                        {verify_icon} Verified • Hash: {msg.get('hash', 'N/A')[:8]}...
+                        {verify_icon} Verified • Chain: {msg.get('hash', 'N/A')[:6]}...
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
                 
             except Exception:
-                st.markdown("""
-                <div class="message">
+                st.markdown(f"""
+                <div class="message" style="border-left-color: #ef4444;">
                     <div class="message-content" style="color: rgba(255, 255, 255, 0.5); font-style: italic;">
-                        [🔒 Encrypted message]
+                        [🔒 Unable to decrypt message]
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -856,7 +1073,8 @@ def chat_interface():
                 "🔒 Type your message...",
                 key=message_key,
                 label_visibility="collapsed",
-                placeholder="Your encrypted message here..."
+                placeholder="Type your encrypted message here...",
+                on_change=None
             )
         with col2:
             send_clicked = st.button("⚡ SEND", type="primary", use_container_width=True, key="send_btn")
@@ -867,16 +1085,16 @@ def chat_interface():
             # Check rate limit
             if not global_state.check_rate_limit(st.session_state.user_id):
                 st.warning("⚠️ Please wait before sending another message (1 second cooldown)")
-                return
+                st.stop()
             
             # Sanitize message
             sanitized_message = sanitize_message(message.strip())
             
             if len(sanitized_message) > 500:
                 st.warning("⚠️ Message too long (max 500 characters)")
-                return
+                st.stop()
             
-            # Get previous hash
+            # Get previous hash for blockchain effect
             previous_hash = "0" * 64
             if messages:
                 previous_hash = messages[-1].get("hash", "0" * 64)
@@ -885,9 +1103,9 @@ def chat_interface():
                 encrypted_msg = encryptor.encrypt(sanitized_message)
             except Exception:
                 st.error("❌ Encryption failed")
-                return
+                st.stop()
             
-            # Create hash
+            # Create hash chain
             data_to_hash = f"{encrypted_msg}{previous_hash}{time.time()}"
             current_hash = encryptor.calculate_hash(data_to_hash)
             
@@ -909,8 +1127,10 @@ def chat_interface():
                 st.error("❌ Failed to send message")
     
     except Exception as e:
-        st.error(f"❌ Error: {str(e)}")
-        st.session_state.current_room = None
+        st.error(f"❌ Error in chat interface: {str(e)}")
+        if st.button("🔄 Reset Application", key="reset_error"):
+            st.session_state.current_room = None
+            st.rerun()
 
 # ====================
 # MAIN APP
@@ -931,6 +1151,7 @@ def main():
         if st.session_state.current_room:
             chat_interface()
         else:
+            # Landing page layout
             col1, col2 = st.columns([1, 1], gap="large")
             
             with col1:
@@ -939,16 +1160,40 @@ def main():
             with col2:
                 join_room_section()
             
+            # Security notice
             st.markdown("<br>", unsafe_allow_html=True)
             st.markdown("""
-            <div style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem; font-style: italic; font-size: 0.9rem;">
-                🔒 Ephemeral channels • 30 min TTL • Max 200 messages • In-memory only
+            <div style="text-align: center; padding: 3rem 0; animation: fadeInScale 1s ease-out 0.6s both;">
+                <div style="display: inline-flex; gap: 2rem; flex-wrap: wrap; justify-content: center; color: rgba(255, 255, 255, 0.6); font-size: 0.85rem; font-family: 'Space Grotesk', sans-serif;">
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 8px; height: 8px; background: #8a63d2; border-radius: 50%; box-shadow: 0 0 10px rgba(138, 99, 210, 0.8);"></span>
+                        Ephemeral Channels
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);"></span>
+                        30 Min TTL
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);"></span>
+                        Max 200 Messages
+                    </span>
+                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span style="width: 8px; height: 8px; background: #ef4444; border-radius: 50%; box-shadow: 0 0 10px rgba(239, 68, 68, 0.8);"></span>
+                        In-Memory Only
+                    </span>
+                </div>
+                <div style="margin-top: 1.5rem; color: rgba(255, 255, 255, 0.4); font-size: 0.75rem; font-style: italic;">
+                    No logs. No traces. Zero persistence.
+                </div>
             </div>
             """, unsafe_allow_html=True)
     
     except Exception as e:
         st.error(f"Application Error: {str(e)}")
-        st.info("Please refresh the page")
+        st.info("Please refresh the page or contact support if the issue persists.")
+        if st.button("🔄 Reload Application"):
+            st.session_state.clear()
+            st.rerun()
 
 if __name__ == "__main__":
     main()
