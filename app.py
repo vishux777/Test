@@ -1,70 +1,37 @@
+```python
 import streamlit as st
 import hashlib
-import json
 import time
 from datetime import datetime
 from cryptography.fernet import Fernet
 import threading
 import uuid
-import base64
 from typing import Dict, List, Optional
 import re
-import secrets
-import pickle
-from pathlib import Path
+import html
 
 # ====================
-# PRODUCTION-READY GLOBAL STATE WITH ACTIVE USER TRACKING
+# IN-MEMORY GLOBAL STATE (NO DISK PERSISTENCE)
 # ====================
-class PersistentGlobalState:
-    """Thread-safe persistent global state that survives Streamlit reruns"""
+class InMemoryGlobalState:
+    """Thread-safe in-memory global state - ephemeral by design"""
     _lock = threading.Lock()
     _instance = None
-    _state_file = Path("chat_state.pkl")
     
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._instance._load_state()
+            cls._instance._initialize()
         return cls._instance
     
-    def _load_state(self):
-        """Load state from disk if it exists"""
-        try:
-            if self._state_file.exists():
-                with open(self._state_file, 'rb') as f:
-                    state_data = pickle.load(f)
-                    self.ROOMS = state_data.get('rooms', {})
-                    self.ENCRYPTION_KEY = state_data.get('encryption_key', Fernet.generate_key())
-                    self.ACTIVE_USERS = state_data.get('active_users', {})  # Track active users
-                    self.CHANNEL_THEMES = state_data.get('channel_themes', {})  # Track channel themes
-            else:
-                self.ROOMS = {}
-                self.ENCRYPTION_KEY = Fernet.generate_key()
-                self.ACTIVE_USERS = {}  # room_id -> {user_id: last_seen_timestamp}
-                self.CHANNEL_THEMES = {}  # room_id -> theme_name
-                self._save_state()
-        except Exception as e:
-            print(f"Error loading state: {e}")
-            self.ROOMS = {}
-            self.ENCRYPTION_KEY = Fernet.generate_key()
-            self.ACTIVE_USERS = {}
-            self.CHANNEL_THEMES = {}
+    def _initialize(self):
+        """Initialize state in memory"""
+        self.ROOMS = {}
+        self.ACTIVE_USERS = {}
+        self.ROOM_KEYS = {}
+        self.USER_LAST_MESSAGE = {}
+        self.ROOM_CREATED_AT = {}
     
-    def _save_state(self):
-        """Save state to disk"""
-        try:
-            state_data = {
-                'rooms': self.ROOMS,
-                'encryption_key': self.ENCRYPTION_KEY,
-                'active_users': self.ACTIVE_USERS,
-                'channel_themes': self.CHANNEL_THEMES
-            }
-            with open(self._state_file, 'wb') as f:
-                pickle.dump(state_data, f)
-        except Exception as e:
-            print(f"Error saving state: {e}")
-
     def get_rooms(self):
         with self._lock:
             return self.ROOMS.copy()
@@ -79,23 +46,30 @@ class PersistentGlobalState:
                 return False
             if "messages" not in self.ROOMS[room_id]:
                 self.ROOMS[room_id]["messages"] = []
-            self.ROOMS[room_id]["messages"].append(message_data)
-            self._save_state()
+            
+            # Hard limit: 200 messages per room
+            messages = self.ROOMS[room_id]["messages"]
+            messages.append(message_data)
+            if len(messages) > 200:
+                self.ROOMS[room_id]["messages"] = messages[-200:]
+            
             return True
     
     def create_room(self, room_id: str, room_name: str):
         with self._lock:
             if room_id not in self.ROOMS:
+                # Generate per-room encryption key
+                room_key = Fernet.generate_key()
+                
                 self.ROOMS[room_id] = {
                     "messages": [],
                     "created_at": time.time(),
                     "name": room_name,
                     "room_id": room_id,
-                    "message_count": 0
                 }
-                self.ACTIVE_USERS[room_id] = {}  # Initialize active users tracking
-                self.CHANNEL_THEMES[room_id] = "Cinematic Dark"  # Default theme
-                self._save_state()
+                self.ACTIVE_USERS[room_id] = {}
+                self.ROOM_KEYS[room_id] = room_key
+                self.ROOM_CREATED_AT[room_id] = time.time()
                 return True
             return False
     
@@ -105,103 +79,91 @@ class PersistentGlobalState:
             if room_id not in self.ACTIVE_USERS:
                 self.ACTIVE_USERS[room_id] = {}
             self.ACTIVE_USERS[room_id][user_id] = time.time()
-            self._save_state()
     
-    def get_active_users(self, room_id: str) -> Dict[str, float]:
-        """Get active users for a room (users active in last 30 seconds)"""
-        with self._lock:
-            if room_id not in self.ACTIVE_USERS:
-                return {}
-            
-            current_time = time.time()
-            active_users = {}
-            
-            for user_id, last_seen in self.ACTIVE_USERS[room_id].items():
-                if current_time - last_seen < 30:  # Active within last 30 seconds
-                    active_users[user_id] = last_seen
-            
-            return active_users
-    
-    def cleanup_inactive_users(self, room_id: str):
-        """Remove inactive users and return count of removed users"""
+    def get_active_users_count(self, room_id: str) -> int:
+        """Get count of active users (active in last 30 seconds)"""
         with self._lock:
             if room_id not in self.ACTIVE_USERS:
                 return 0
             
             current_time = time.time()
-            original_count = len(self.ACTIVE_USERS[room_id])
+            active_count = sum(
+                1 for last_seen in self.ACTIVE_USERS[room_id].values()
+                if current_time - last_seen < 30
+            )
+            return active_count
+    
+    def cleanup_inactive_users(self, room_id: str):
+        """Remove inactive users"""
+        with self._lock:
+            if room_id not in self.ACTIVE_USERS:
+                return
             
-            # Keep only users active in last 30 seconds
+            current_time = time.time()
             self.ACTIVE_USERS[room_id] = {
                 user_id: last_seen 
                 for user_id, last_seen in self.ACTIVE_USERS[room_id].items()
                 if current_time - last_seen < 30
             }
+    
+    def cleanup_expired_rooms(self):
+        """Remove rooms with no active users or expired TTL (30 minutes)"""
+        with self._lock:
+            current_time = time.time()
+            rooms_to_delete = []
             
-            removed_count = original_count - len(self.ACTIVE_USERS[room_id])
-            self._save_state()
-            return removed_count
-    
-    def should_cleanup_messages(self, room_id: str) -> bool:
-        """Check if messages should be cleaned up (no active users)"""
-        if not room_id:
-            return False
-        active_users = self.get_active_users(room_id)
-        return len(active_users) == 0  # No active users
-    
-    def get_channel_theme(self, room_id: str) -> str:
-        """Get the theme for a specific channel"""
-        return self.CHANNEL_THEMES.get(room_id, "Cinematic Dark")
-    
-    def set_channel_theme(self, room_id: str, theme_name: str):
-        """Set the theme for a specific channel"""
-        with self._lock:
-            self.CHANNEL_THEMES[room_id] = theme_name
-            self._save_state()
-    
-    def get_room_stats(self, room_id: str) -> Optional[Dict]:
-        """Safely get room statistics"""
-        try:
-            if room_id in self.ROOMS:
-                room = self.ROOMS[room_id]
-                messages = room.get("messages", [])
-                return {
-                    "message_count": len(messages),
-                    "created_at": room.get("created_at", 0),
-                    "last_activity": max([msg.get("timestamp", 0) for msg in messages], default=0)
+            for room_id in list(self.ROOMS.keys()):
+                # Check TTL (30 minutes)
+                room_age = current_time - self.ROOM_CREATED_AT.get(room_id, current_time)
+                if room_age > 1800:  # 30 minutes
+                    rooms_to_delete.append(room_id)
+                    continue
+                
+                # Check active users
+                active_users = {
+                    user_id: last_seen 
+                    for user_id, last_seen in self.ACTIVE_USERS.get(room_id, {}).items()
+                    if current_time - last_seen < 30
                 }
-            return None
-        except Exception as e:
-            print(f"Error getting room stats: {e}")
-            return None
+                
+                if len(active_users) == 0:
+                    # No active users, schedule for deletion
+                    rooms_to_delete.append(room_id)
+            
+            # Delete expired rooms
+            for room_id in rooms_to_delete:
+                self.ROOMS.pop(room_id, None)
+                self.ACTIVE_USERS.pop(room_id, None)
+                self.ROOM_KEYS.pop(room_id, None)
+                self.ROOM_CREATED_AT.pop(room_id, None)
     
-    def clear_room_messages(self, room_id: str) -> bool:
-        """Clear all messages from a room"""
+    def get_room_key(self, room_id: str) -> Optional[bytes]:
+        """Get encryption key for room"""
         with self._lock:
-            try:
-                if room_id in self.ROOMS:
-                    self.ROOMS[room_id]["messages"] = []
-                    self._save_state()
-                    return True
+            return self.ROOM_KEYS.get(room_id)
+    
+    def check_rate_limit(self, user_id: str) -> bool:
+        """Check if user can send message (1 second rate limit)"""
+        with self._lock:
+            current_time = time.time()
+            last_message_time = self.USER_LAST_MESSAGE.get(user_id, 0)
+            
+            if current_time - last_message_time < 1.0:
                 return False
-            except Exception as e:
-                print(f"Error clearing room messages: {e}")
-                return False
+            
+            self.USER_LAST_MESSAGE[user_id] = current_time
+            return True
 
 @st.cache_resource
 def get_global_state():
-    return PersistentGlobalState()
+    return InMemoryGlobalState()
 
 # ====================
 # ENCRYPTION & SECURITY
 # ====================
 class EncryptionHandler:
-    def __init__(self, key=None):
-        if key:
-            self.key = key
-        else:
-            self.key = get_global_state().ENCRYPTION_KEY
-        self.cipher = Fernet(self.key)
+    def __init__(self, key: bytes):
+        self.cipher = Fernet(key)
     
     def encrypt(self, plaintext: str) -> str:
         return self.cipher.encrypt(plaintext.encode()).decode()
@@ -213,25 +175,111 @@ class EncryptionHandler:
     def calculate_hash(data: str) -> str:
         return hashlib.sha256(data.encode()).hexdigest()
 
+def sanitize_message(message: str) -> str:
+    """Strip HTML tags and prevent markdown injection"""
+    # Remove HTML tags
+    message = html.escape(message)
+    # Remove potentially problematic markdown
+    message = message.replace('```', '').replace('`', '')
+    return message.strip()
+
 # ====================
-# PROFESSIONAL STYLING WITH OPTIMIZED SIZING
+# PROFESSIONAL STYLING WITH SMOOTH ANIMATIONS
 # ====================
 def inject_professional_styles():
     st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
     
-    /* Professional base styling */
+    /* Animated noise overlay */
+    @keyframes noise {
+        0%, 100% { opacity: 0.03; }
+        50% { opacity: 0.06; }
+    }
+    
+    .stApp::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        opacity: 0.03;
+        pointer-events: none;
+        animation: noise 8s infinite;
+        z-index: 1;
+    }
+    
     .stApp {
-        background: #000000 !important;
-        transition: all 0.8s ease;
+        background: linear-gradient(180deg, #000000 0%, #0a0a0f 50%, #000000 100%) !important;
+        background-size: 100% 200%;
+        animation: gradientShift 20s ease infinite;
+        position: relative;
+    }
+    
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 0%; }
+        50% { background-position: 0% 100%; }
     }
     
     .main {
         background: transparent !important;
+        position: relative;
+        z-index: 2;
     }
     
-    /* Professional hero section */
+    /* Neon pulse animation */
+    @keyframes neonPulse {
+        0%, 100% {
+            text-shadow: 0 0 20px rgba(138, 99, 210, 0.5),
+                         0 0 40px rgba(138, 99, 210, 0.3),
+                         0 0 60px rgba(138, 99, 210, 0.2);
+        }
+        50% {
+            text-shadow: 0 0 30px rgba(138, 99, 210, 0.8),
+                         0 0 60px rgba(138, 99, 210, 0.5),
+                         0 0 90px rgba(138, 99, 210, 0.3);
+        }
+    }
+    
+    /* Message entrance animation */
+    @keyframes messageEnter {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Typing dots animation */
+    @keyframes typingDots {
+        0%, 20% { content: '.'; }
+        40% { content: '..'; }
+        60%, 100% { content: '...'; }
+    }
+    
+    /* Verification icon pulse */
+    @keyframes verifyPulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.1); opacity: 0.8; }
+    }
+    
+    /* Button glow animation */
+    @keyframes buttonGlow {
+        0%, 100% {
+            box-shadow: 0 4px 15px rgba(138, 99, 210, 0.3),
+                        0 0 20px rgba(138, 99, 210, 0.2);
+        }
+        50% {
+            box-shadow: 0 4px 20px rgba(138, 99, 210, 0.5),
+                        0 0 40px rgba(138, 99, 210, 0.3);
+        }
+    }
+    
     .hero-container {
         text-align: left;
         padding: 4rem 0 5rem 0;
@@ -248,7 +296,7 @@ def inject_professional_styles():
         letter-spacing: 0.5em;
         text-transform: uppercase;
         margin-bottom: 1.5rem;
-        text-shadow: 0 0 20px rgba(138, 99, 210, 0.5);
+        animation: neonPulse 3s ease-in-out infinite;
     }
     
     .main-title {
@@ -282,7 +330,6 @@ def inject_professional_styles():
         line-height: 1.7;
     }
     
-    /* Professional cards with optimal sizing */
     .creation-card {
         background: rgba(15, 15, 20, 0.95);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -291,7 +338,7 @@ def inject_professional_styles():
         margin: 2rem 0;
         backdrop-filter: blur(10px);
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .creation-card:hover {
@@ -321,7 +368,6 @@ def inject_professional_styles():
         background: linear-gradient(90deg, #8a63d2, transparent);
     }
     
-    /* Optimized input fields - professional sizing */
     .stTextInput > div > div > input {
         background: rgba(255, 255, 255, 0.03) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -330,7 +376,7 @@ def inject_professional_styles():
         font-family: 'Inter', sans-serif !important;
         font-size: 1rem !important;
         padding: 0.8rem 1.2rem !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         backdrop-filter: blur(5px);
     }
     
@@ -338,10 +384,8 @@ def inject_professional_styles():
         border-color: #8a63d2 !important;
         background: rgba(138, 99, 210, 0.05) !important;
         box-shadow: 0 0 0 3px rgba(138, 99, 210, 0.2) !important;
-        transform: scale(1.02);
     }
     
-    /* Optimized buttons - professional and proportional */
     .stButton > button {
         background: linear-gradient(135deg, #8a63d2 0%, #6d28d9 100%) !important;
         color: white !important;
@@ -352,41 +396,45 @@ def inject_professional_styles():
         font-weight: 500 !important;
         font-size: 0.9rem !important;
         letter-spacing: 0.05em !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         width: 100%;
         text-transform: uppercase;
         cursor: pointer !important;
-        box-shadow: 0 4px 15px rgba(138, 99, 210, 0.3);
+        animation: buttonGlow 3s ease-in-out infinite;
     }
     
     .stButton > button:hover {
         transform: translateY(-2px) !important;
-        box-shadow: 0 8px 25px rgba(138, 99, 210, 0.4) !important;
         background: linear-gradient(135deg, #946be6 0%, #7c3aed 100%) !important;
     }
     
-    /* Professional chat container */
+    .stButton > button:active {
+        transform: translateY(0) !important;
+    }
+    
     .chat-container {
         background: rgba(15, 15, 20, 0.95);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 20px;
         padding: 2rem;
         margin-top: 2rem;
-        max-height: 600px;
+        margin-bottom: 1rem;
+        max-height: 500px;
         overflow-y: auto;
         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(10px);
+        scroll-behavior: smooth;
     }
     
-    /* Professional messages */
     .message {
         margin-bottom: 1.5rem;
         padding: 1.2rem;
         background: rgba(255, 255, 255, 0.03);
         border-radius: 16px;
         border-left: 4px solid #8a63d2;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         backdrop-filter: blur(5px);
+        animation: messageEnter 0.4s ease-out;
     }
     
     .message:hover {
@@ -395,7 +443,48 @@ def inject_professional_styles():
         box-shadow: 0 5px 20px rgba(138, 99, 210, 0.2);
     }
     
-    /* Professional status indicators */
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.8rem;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 0.85rem;
+    }
+    
+    .message-user {
+        color: #8a63d2;
+        font-weight: 500;
+    }
+    
+    .message-time {
+        color: rgba(255, 255, 255, 0.5);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+    }
+    
+    .message-content {
+        color: rgba(255, 255, 255, 0.9);
+        font-family: 'Inter', sans-serif;
+        line-height: 1.6;
+        margin-bottom: 0.8rem;
+        word-wrap: break-word;
+    }
+    
+    .message-meta {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.4);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .verify-icon {
+        display: inline-block;
+        animation: verifyPulse 2s ease-in-out infinite;
+    }
+    
     .status-indicator {
         display: inline-flex;
         align-items: center;
@@ -420,11 +509,68 @@ def inject_professional_styles():
     }
     
     @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.9); }
     }
     
-    /* Custom scrollbar */
+    .active-header {
+        animation: neonPulse 3s ease-in-out infinite;
+    }
+    
+    .typing-indicator {
+        color: rgba(255, 255, 255, 0.6);
+        font-style: italic;
+        font-size: 0.85rem;
+    }
+    
+    .typing-indicator::after {
+        content: '.';
+        animation: typingDots 1.5s infinite;
+    }
+    
+    .message-input-container {
+        position: sticky;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        padding: 1.5rem 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        z-index: 10;
+    }
+    
+    .room-header {
+        background: rgba(15, 15, 20, 0.95);
+        border: 1px solid rgba(138, 99, 210, 0.3);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        backdrop-filter: blur(10px);
+    }
+    
+    .room-info {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.3rem;
+        color: #ffffff;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .room-id {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.9rem;
+        color: #8a63d2;
+        font-weight: 400;
+        margin-left: 0.5rem;
+    }
+    
+    .user-count {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 0.5rem;
+    }
+    
     ::-webkit-scrollbar {
         width: 8px;
     }
@@ -439,7 +585,29 @@ def inject_professional_styles():
         border-radius: 4px;
     }
     
-    /* Hide Streamlit elements */
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #946be6, #7c3aed);
+    }
+    
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+        .main-title {
+            font-size: 2.5rem;
+        }
+        
+        .title-accent {
+            font-size: 1.2rem;
+        }
+        
+        .chat-container {
+            max-height: 400px;
+        }
+        
+        .creation-card {
+            padding: 1.5rem;
+        }
+    }
+    
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
@@ -458,16 +626,16 @@ def render_header():
     """, unsafe_allow_html=True)
 
 # ====================
-# ULTRA-FAST AUTO-UPDATE MECHANISM (0.5 SECONDS)
+# OPTIMIZED AUTO-UPDATE (1.5 SECOND POLLING)
 # ====================
-class UltraFastAutoUpdater:
+class OptimizedAutoUpdater:
     def __init__(self):
         self.last_message_count = 0
         self.last_check_time = 0
-        self.update_interval = 0.5  # 0.5 seconds for ultra-fast updates
+        self.update_interval = 1.5  # 1.5 seconds for optimized polling
     
-    def check_for_updates(self, room_id: str) -> bool:
-        """Check if there are new messages with ultra-fast polling"""
+    def should_update(self, room_id: str) -> bool:
+        """Check if UI should update based on message count change"""
         global_state = get_global_state()
         room_data = global_state.get_room(room_id)
         if not room_data:
@@ -476,12 +644,13 @@ class UltraFastAutoUpdater:
         current_count = len(room_data.get("messages", []))
         current_time = time.time()
         
-        # Check if enough time has passed since last update
+        # Only check at intervals
         if current_time - self.last_check_time < self.update_interval:
             return False
             
         self.last_check_time = current_time
         
+        # Update only if message count changed
         if current_count != self.last_message_count:
             self.last_message_count = current_count
             return True
@@ -498,11 +667,9 @@ def initialize_session():
     if 'room_name' not in st.session_state:
         st.session_state.room_name = ""
     if 'auto_updater' not in st.session_state:
-        st.session_state.auto_updater = UltraFastAutoUpdater()
+        st.session_state.auto_updater = OptimizedAutoUpdater()
     if 'message_key' not in st.session_state:
         st.session_state.message_key = 0
-    if 'initialized' not in st.session_state:
-        st.session_state.initialized = True
     if 'last_activity_update' not in st.session_state:
         st.session_state.last_activity_update = 0
 
@@ -512,7 +679,7 @@ def generate_room_id(name: str) -> str:
     return f"{clean_name}-{unique_part}"
 
 # ====================
-# PROFESSIONAL UI COMPONENTS WITH OPTIMIZED SIZING
+# UI COMPONENTS
 # ====================
 def create_room_section():
     with st.container():
@@ -540,7 +707,7 @@ def create_room_section():
                 st.session_state.room_name = room_name.strip()
                 st.success(f"✅ Channel created: **{room_id}**")
                 st.balloons()
-                time.sleep(0.5)
+                time.sleep(0.3)
                 st.rerun()
             else:
                 st.error("❌ Channel exists")
@@ -559,23 +726,21 @@ def join_room_section():
             label_visibility="collapsed"
         )
         
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            if st.button("⚡ JOIN", use_container_width=True):
-                if join_id.strip():
-                    global_state = get_global_state()
-                    room_data = global_state.get_room(join_id.strip())
-                    if room_data:
-                        st.session_state.current_room = join_id.strip()
-                        st.session_state.room_name = room_data.get("name", "Unknown")
-                        st.rerun()
-                    else:
-                        st.error("❌ Channel not found")
+        if st.button("⚡ JOIN", use_container_width=True):
+            if join_id.strip():
+                global_state = get_global_state()
+                room_data = global_state.get_room(join_id.strip())
+                if room_data:
+                    st.session_state.current_room = join_id.strip()
+                    st.session_state.room_name = room_data.get("name", "Unknown")
+                    st.rerun()
+                else:
+                    st.error("❌ Channel not found")
         
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ====================
-# ULTRA-FAST CHAT INTERFACE WITH PROFESSIONAL STYLING
+# OPTIMIZED CHAT INTERFACE
 # ====================
 def chat_interface():
     if not st.session_state.current_room:
@@ -589,27 +754,28 @@ def chat_interface():
         st.rerun()
         return
     
-    # Create placeholder for ultra-fast auto-updating content
-    chat_placeholder = st.empty()
+    # Update user activity
+    global_state.update_user_activity(st.session_state.current_room, st.session_state.user_id)
     
-    # Ultra-fast auto-update mechanism (0.5 seconds)
-    current_time = time.time()
-    if current_time - st.session_state.last_activity_update >= 0.5:
-        st.session_state.last_activity_update = current_time
-        
-        # Check for new messages
-        if st.session_state.auto_updater.check_for_updates(st.session_state.current_room):
-            st.rerun()
+    # Cleanup inactive users and expired rooms
+    global_state.cleanup_inactive_users(st.session_state.current_room)
+    global_state.cleanup_expired_rooms()
     
-    # Chat header with professional styling
+    # Optimized auto-update (1.5 seconds)
+    if st.session_state.auto_updater.should_update(st.session_state.current_room):
+        st.rerun()
+    
+    # Chat header
     col1, col2 = st.columns([3, 1])
     with col1:
+        active_count = global_state.get_active_users_count(st.session_state.current_room)
         st.markdown(f"""
-        <div class="chat-header">
+        <div class="room-header active-header">
             <div class="room-info">
                 🔒 {room_data.get('name', 'Unknown')}
                 <span class="room-id">{st.session_state.current_room}</span>
             </div>
+            <div class="user-count">👥 {active_count} active</div>
         </div>
         """, unsafe_allow_html=True)
     
@@ -618,20 +784,27 @@ def chat_interface():
             st.session_state.current_room = None
             st.rerun()
     
-    # Enhanced status indicator
+    # Status indicator
     st.markdown("""
     <div class="status-indicator">
         <div class="status-dot"></div>
-        🔒 ENCRYPTED • LIVE • ANONYMOUS • 0.5s UPDATES
+        🔒 ENCRYPTED • LIVE • ANONYMOUS • 1.5s UPDATES
     </div>
     """, unsafe_allow_html=True)
     
-    # Display messages with professional styling and ultra-fast updates
-    with chat_placeholder.container():
-        st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+    # Chat messages container with auto-scroll
+    chat_container = st.container()
+    with chat_container:
+        st.markdown('<div class="chat-container" id="chat-messages">', unsafe_allow_html=True)
         
         messages = room_data.get("messages", [])
-        encryptor = EncryptionHandler()
+        room_key = global_state.get_room_key(st.session_state.current_room)
+        
+        if not room_key:
+            st.error("❌ Encryption key not found")
+            return
+        
+        encryptor = EncryptionHandler(room_key)
         
         if not messages:
             st.markdown("""
@@ -642,7 +815,7 @@ def chat_interface():
             </div>
             """, unsafe_allow_html=True)
         
-        # Display messages with professional animations (last 50 messages)
+        # Display last 50 messages
         for i, msg in enumerate(messages[-50:]):
             try:
                 decrypted = encryptor.decrypt(msg["encrypted_message"])
@@ -650,15 +823,14 @@ def chat_interface():
                 
                 # Chain verification
                 chain_valid = True
-                if i > 0 and i < len(messages):
-                    prev_msg = messages[max(0, i-1)]
+                if i > 0:
+                    prev_msg = messages[-50:][i-1]
                     chain_valid = msg.get("previous_hash", "") == prev_msg.get("hash", "")
                 
-                chain_status = "✅ Verified" if chain_valid else "❌ Broken"
+                verify_icon = '<span class="verify-icon">✅</span>' if chain_valid else '❌'
                 user_short = msg.get('user_id', 'unknown')[-6:]
                 is_current_user = msg.get('user_id') == st.session_state.user_id
                 
-                # Professional message styling based on user
                 message_style = "border-left-color: #10b981;" if is_current_user else "border-left-color: #8a63d2;"
                 
                 st.markdown(f"""
@@ -669,13 +841,13 @@ def chat_interface():
                     </div>
                     <div class="message-content">{decrypted}</div>
                     <div class="message-meta">
-                        {chain_status} • Hash: {msg.get('hash', 'N/A')[:8]}...
+                        {verify_icon} Verified • Hash: {msg.get('hash', 'N/A')[:8]}...
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
                 
-            except Exception as e:
-                st.markdown(f"""
+            except Exception:
+                st.markdown("""
                 <div class="message">
                     <div class="message-content" style="color: rgba(255, 255, 255, 0.5); font-style: italic;">
                         [🔒 Encrypted message]
@@ -684,8 +856,19 @@ def chat_interface():
                 """, unsafe_allow_html=True)
         
         st.markdown('</div>', unsafe_allow_html=True)
+        
+        # Auto-scroll to bottom
+        st.markdown("""
+        <script>
+        const chatContainer = document.getElementById('chat-messages');
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        </script>
+        """, unsafe_allow_html=True)
     
-    # Professional message input with improved sizing
+    # Sticky message input
+    st.markdown('<div class="message-input-container">', unsafe_allow_html=True)
     col1, col2 = st.columns([5, 1])
     with col1:
         message_key = f"message_input_{st.session_state.get('message_key', 0)}"
@@ -697,24 +880,30 @@ def chat_interface():
         )
     with col2:
         send_clicked = st.button("⚡ SEND", type="primary", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     
-    # Handle message sending with professional flow
+    # Handle message sending with rate limiting
     if send_clicked and message and message.strip():
-        # Get previous hash with error handling
+        # Check rate limit
+        if not global_state.check_rate_limit(st.session_state.user_id):
+            st.warning("⚠️ Please wait before sending another message (1 second cooldown)")
+            return
+        
+        # Sanitize message
+        sanitized_message = sanitize_message(message.strip())
+        
+        # Get previous hash
         previous_hash = "0" * 64
         if messages:
             previous_hash = messages[-1].get("hash", "0" * 64)
         
-        # Show encryption process
-        with st.spinner("🔐 Encrypting..."):
-            time.sleep(0.15)  # Minimal delay for professional feel
-            try:
-                encrypted_msg = encryptor.encrypt(message.strip())
-            except Exception as e:
-                st.error("❌ Encryption failed")
-                return
+        try:
+            encrypted_msg = encryptor.encrypt(sanitized_message)
+        except Exception:
+            st.error("❌ Encryption failed")
+            return
         
-        # Create data for hashing
+        # Create hash
         data_to_hash = f"{encrypted_msg}{previous_hash}{time.time()}"
         current_hash = encryptor.calculate_hash(data_to_hash)
         
@@ -726,54 +915,48 @@ def chat_interface():
             "previous_hash": previous_hash,
             "user_id": st.session_state.user_id,
             "message_id": str(uuid.uuid4()),
-            "reactions": []
         }
         
         # Add to global state
         if global_state.add_message(st.session_state.current_room, msg_data):
-            st.toast("✅ Message sent securely!", icon="🔒")
-            # Increment key to clear input
             st.session_state.message_key = st.session_state.get('message_key', 0) + 1
             st.rerun()
         else:
             st.error("❌ Failed to send message")
 
 # ====================
-# MAIN APP WITH PROFESSIONAL DESIGN
+# MAIN APP
 # ====================
 def main():
     st.set_page_config(
         page_title="DarkRelay • DE STUDIO",
         page_icon="🔒",
         layout="wide",
-        initial_sidebar_state="expanded"
+        initial_sidebar_state="collapsed"
     )
     
     inject_professional_styles()
     render_header()
     initialize_session()
     
-    # Main content area - removed active users sidebar
-    main_area = st.container()
-    
-    with main_area:
-        if st.session_state.current_room:
-            chat_interface()
-        else:
-            col1, col2 = st.columns([1, 1], gap="large")
-            
-            with col1:
-                create_room_section()
-            
-            with col2:
-                join_room_section()
-            
-            st.markdown("<br><br>", unsafe_allow_html=True)
-            st.markdown("""
-            <div style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem; font-style: italic;">
-                🔒 Channels are private and not displayed for maximum anonymity
-            </div>
-            """, unsafe_allow_html=True)
+    if st.session_state.current_room:
+        chat_interface()
+    else:
+        col1, col2 = st.columns([1, 1], gap="large")
+        
+        with col1:
+            create_room_section()
+        
+        with col2:
+            join_room_section()
+        
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align: center; color: rgba(255, 255, 255, 0.5); padding: 2rem; font-style: italic;">
+            🔒 Channels are ephemeral • 30 minute TTL • Max 200 messages per room
+        </div>
+        """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
+```
